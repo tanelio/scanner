@@ -1,3 +1,5 @@
+
+import java.sql.Timestamp
 import slick.lifted.Tag
 import slick.jdbc.H2Profile.api._
 
@@ -6,7 +8,7 @@ import slick.jdbc.H2Profile.api._
   * Created by totala on 6/13/17.
   */
 
-type Timestamp = java.sql.Timestamp;
+//type Timestamp = sql.Timestamp
 
 class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Int, Int, Int, String)](tag, "ATTACKS") {
   def id = column[Int]("SUP_ID", O.PrimaryKey) // This is the primary key column
