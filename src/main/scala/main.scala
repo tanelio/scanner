@@ -61,8 +61,10 @@ object main extends App {
   val traceroute = findprog("traceroute")
   val whois = findprog("whois")
 
-  val r = Seq("nmap", "192.168.254.5").!!
+  println(nmap, traceroute, whois)
 
+  val r = Seq(nmap, "-A", "192.168.254.5").!!
+  println(r)
 
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
