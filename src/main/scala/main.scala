@@ -37,6 +37,21 @@ class Whois(tag: Tag) extends Table[(Int, Timestamp, Timestamp, String)](tag, "W
   def * = (ip, start, stop, who)
 }
 
+class PrivateNetwork {
+  // IPv4 Private networks, i.e. local
+  val priv4 = ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
+  // ToDo: IPv6
+  val priv6 = "fd00::/8"
+
+  def isPrivate(IP: String): Boolean = {
+     if (IP.contains(":"))
+       false
+     else {
+       //
+     }
+  }
+}
+
 /*
  External programs:
   - nmap
