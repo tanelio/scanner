@@ -1,6 +1,9 @@
+import java.net.InetAddress
 import java.sql.Timestamp
+
 import slick.lifted.Tag
 import slick.jdbc.H2Profile.api._
+
 import sys.process._
 
 
@@ -42,14 +45,6 @@ class PrivateNetwork {
   val priv4 = ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
   // ToDo: IPv6
   val priv6 = "fd00::/8"
-
-  def isPrivate(IP: String): Boolean = {
-     if (IP.contains(":"))
-       false
-     else {
-       //
-     }
-  }
 }
 
 /*
@@ -78,8 +73,10 @@ object main extends App {
 
   println(nmap, traceroute, whois)
 
-  val r = Seq(nmap, "-A", "192.168.254.5").!!
-  println(r)
+  //val r = Seq(nmap, "-A", "192.168.254.5").!!
+  //ruprintln(r)
+
+  println(InetAddress.getByName("192.168.254.5"))
 
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
