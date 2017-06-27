@@ -42,9 +42,6 @@ class Whois(tag: Tag) extends Table[(Int, Timestamp, Timestamp, String)](tag, "W
 
 class PrivateNetwork {
   // IPv4 Private networks, i.e. local
-  val priv4 = ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
-  // ToDo: IPv6
-  val priv6 = "fd00::/8"
 }
 
 /*
@@ -76,7 +73,9 @@ object main extends App {
   //val r = Seq(nmap, "-A", "192.168.254.5").!!
   //ruprintln(r)
 
-  println(InetAddress.getByName("192.168.254.5"))
+  println(InetAddress.getByName("192.168.254.5").isSiteLocalAddress)
+  println(InetAddress.getByName("162.206.51.1").isSiteLocalAddress)
+  println(InetAddress.getByName("10.0.0.0").isSiteLocalAddress)
 
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
