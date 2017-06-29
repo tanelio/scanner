@@ -1,10 +1,13 @@
 import java.net.InetAddress
 import java.sql.Timestamp
 
-import slick.lifted.Tag
-import slick.jdbc.H2Profile.api._
+import org.slf4j.LoggerFactory
 
-import sys.process._
+//import akka.event.Logging
+import slick.jdbc.H2Profile.api._
+import slick.lifted.Tag
+
+import scala.sys.process._
 
 
 /**
@@ -56,6 +59,8 @@ class PrivateNetwork {
  */
 
 object main extends App {
+
+  val logger = LoggerFactory.getLogger("main")
 
   print("args: ")
   args foreach print _
