@@ -1,13 +1,9 @@
 import java.net.InetSocketAddress
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import akka.actor.{Actor, ActorRef}
+import org.slf4j.LoggerFactory
 //import akka.event.Logging
-import akka.io.Inet.SO.ReuseAddress
 import akka.io.{IO, Udp}
-import akka.util.ByteString
-import main._
 /**
   * Created by totala on 6/27/17.
   */
@@ -31,8 +27,10 @@ class SyslogReceiver extends Actor {
 
 object SyslogReceiver {
   val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
+  SyslogReceiver(Syslog)
 }
 
+/*
 class SyslogReceiver(val port: Int)  extends Actor {
 
   import SyslogReceiver._
@@ -78,10 +76,11 @@ class SyslogReceiver(val port: Int)  extends Actor {
   }
 
 }
+*/
 
-class Listener(nextActor: ActorRef) extends Actor {
+class SyslogReceiver(nextActor: ActorRef) extends Actor {
   import context.system
-  IO(Udp) ! Udp.Bind(self, new InetSocketAddress("localhost", 0))
+  IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
 
   def receive = {
     case Udp.Bound(local) =>
@@ -95,5 +94,11 @@ class Listener(nextActor: ActorRef) extends Actor {
       nextActor ! processed
     case Udp.Unbind  => socket ! Udp.Unbind
     case Udp.Unbound => context.stop(self)
+  }
+}
+
+class Syslog extends Actor {
+  def receive = {
+
   }
 }

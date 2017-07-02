@@ -82,6 +82,8 @@ object main extends App {
   println(InetAddress.getByName("162.206.51.1").isSiteLocalAddress)
   println(InetAddress.getByName("10.0.0.0").isSiteLocalAddress)
 
+  SyslogReceiver(Syslog)
+
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
 }
