@@ -34,18 +34,12 @@ class SyslogReceiver(val port: Int)  extends Actor {
 
   private val encoding = "US-ASCII"
 
-        IO(Udp) ! Udp.Bind(self, inetSockAddress, List(new ReuseAddress()))
-        logger.debug(s"SyslogReceiver: Started")
+        IO(Udp) ! Udp.Bind(self, inetSockAddress, List(new ReuseAddress())) // ToDo
 
   private def ready(connection: ActorRef): Receive = {
     case Udp.Received(d: ByteString, f: InetSocketAddress) =>
       try {
-        val data = d.decodeString(encoding) // d.utf8String
-        logger.debug(s"SyslogReceiver: Received from ${f.getAddress}: $data")
-      } catch {
-        case t: Exception => logger.error(s"Error in UDP Received: ${t.getMessage}")
-      }
-  }
+        val data = d.decodeString(encoding) // d.utf8String // ToDo
 }
 */
 
