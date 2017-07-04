@@ -1,6 +1,7 @@
 import java.net.InetAddress
 import java.sql.Timestamp
 
+import akka.actor.{ActorSystem, Props}
 import org.slf4j.LoggerFactory
 
 //import akka.event.Logging
@@ -14,15 +15,16 @@ import scala.sys.process._
   * Created by totala on 6/13/17.
   */
 
-class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Int, Int, Int, String)](tag, "ATTACKS") {
+class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Char, Int, Int, Int, String)](tag, "ATTACKS") {
   def id = column[Int]("SUP_ID", O.PrimaryKey) // This is the primary key column
   def ts = column[Timestamp]("TS")    // When incident occurred
   def sip = column[Int]("SIP")        // SourceIP
+  def ll = column[Char]("LL")         // LinkLocal [Y|N] don't scan locals
   def dip = column[Int]("DIP")        // DestinationIP
   def dport = column[Int]("DPORT")    // Destination Port
   def typ = column[Int]("TYPE")       // Type of incident/attack, ToDo: Create Enum
   def desc = column[String]("TXT")    // Syslog line of incident
-  def * = (id, ts, sip, dip, dport, typ, desc)
+  def * = (id, ts, sip, ll, dip, dport, typ, desc)
 }
 
 class Scans(tag: Tag) extends Table[(Int, Timestamp, Timestamp)](tag, "SCANS") {
@@ -43,10 +45,6 @@ class Whois(tag: Tag) extends Table[(Int, Timestamp, Timestamp, String)](tag, "W
   def * = (ip, start, stop, who)
 }
 
-class PrivateNetwork {
-  // IPv4 Private networks, i.e. local
-}
-
 /*
  External programs:
   - nmap
@@ -59,6 +57,7 @@ class PrivateNetwork {
  */
 
 object main extends App {
+  import SyslogReceiver._
 
   val logger = LoggerFactory.getLogger("main")
 
@@ -68,6 +67,10 @@ object main extends App {
 
   val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver="org.h2.Driver")
   val sess = db.createSession()
+
+  val system = ActorSystem("scanner")
+  val syslogref = Props[Syslog]
+  val syslogreceiverref = Props[new SyslogReceiver(syslogref)]
 
   val nmap = findprog("nmap")
   val traceroute = findprog("traceroute")
