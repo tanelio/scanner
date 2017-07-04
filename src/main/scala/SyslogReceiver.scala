@@ -31,10 +31,12 @@ class SyslogReceiver extends Actor {
 */
 
   object SyslogReceiver {
+    import main.main._
+
     val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
 
-    val syslogref = Props[Syslog]
-    val syslogreceiverref = Props[SyslogReceiver]
+    val syslogref = system.actorOf(Props[Syslog])
+    val syslogreceiverref = system.actorOf(Props[SyslogReceiver])
   }
 
   /*
