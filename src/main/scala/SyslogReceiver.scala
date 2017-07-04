@@ -4,11 +4,16 @@ import akka.actor.{Actor, ActorRef}
 import org.slf4j.LoggerFactory
 //import akka.event.Logging
 import akka.io.{IO, Udp}
-/**
-  * Created by totala on 6/27/17.
-  */
 
-/*
+package syslog {
+
+  import akka.actor.Props
+
+  /**
+    * Created by totala on 6/27/17.
+    */
+
+  /*
 class SyslogReceiver extends Actor {
   private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
   private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
@@ -25,11 +30,14 @@ class SyslogReceiver extends Actor {
 }
 */
 
-//object SyslogReceiver {
-//  val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
-//}
+  object SyslogReceiver {
+    val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
 
-/*
+    val syslogref = Props[Syslog]
+    val syslogreceiverref = Props[SyslogReceiver]
+  }
+
+  /*
 class SyslogReceiver(val port: Int)  extends Actor {
 
   private val encoding = "US-ASCII"
@@ -43,33 +51,37 @@ class SyslogReceiver(val port: Int)  extends Actor {
 }
 */
 
-class SyslogReceiver(nextActor: ActorRef) extends Actor {
-  import context.system
-//  import SyslogReceiver._
-  val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
-  IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
+  class SyslogReceiver extends Actor {
 
-  def receive = {
-    case Udp.Bound(local) =>
-      logger.info(s"SyslogReceiver: bound $local")
-      context.become(ready(sender()))
+    import context.system
+
+    import SyslogReceiver._
+    IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
+
+    def receive = {
+      case Udp.Bound(local) =>
+        logger.info(s"SyslogReceiver: bound $local")
+        context.become(ready(sender()))
+    }
+
+    def ready(socket: ActorRef): Receive = {
+      case Udp.Received(data, remote) =>
+        logger.debug(s"SyslogReceiver/Received: $data")
+        syslogref ! data
+      case Udp.Unbind =>
+        logger.info(s"SyslogReceiver/Unbind")
+        socket ! Udp.Unbind
+      case Udp.Unbound =>
+        logger.info(s"SyslogReceiver/Unbound")
+        context.stop(self)
+    }
   }
 
-  def ready(socket: ActorRef): Receive = {
-    case Udp.Received(data, remote) =>
-      logger.debug(s"SyslogReceiver/Received: $data")
-      nextActor ! data
-    case Udp.Unbind  =>
-      logger.info(s"SyslogReceiver/Unbind")
-      socket ! Udp.Unbind
-    case Udp.Unbound =>
-      logger.info(s"SyslogReceiver/Unbound")
-      context.stop(self)
+  class Syslog extends Actor {
+    def receive = {
+      case x =>
+        println(x)
+    }
   }
-}
 
-class Syslog extends Actor {
-  def receive = {
-
-  }
 }

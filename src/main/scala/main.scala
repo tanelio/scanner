@@ -1,7 +1,7 @@
 import java.net.InetAddress
 import java.sql.Timestamp
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.ActorSystem
 import org.slf4j.LoggerFactory
 
 //import akka.event.Logging
@@ -57,7 +57,6 @@ class Whois(tag: Tag) extends Table[(Int, Timestamp, Timestamp, String)](tag, "W
  */
 
 object main extends App {
-  import SyslogReceiver._
 
   val logger = LoggerFactory.getLogger("main")
 
@@ -70,8 +69,6 @@ object main extends App {
   // todo: create schema
 
   val system = ActorSystem("scanner")
-  val syslogref = Props[Syslog]
-  val syslogreceiverref = Props[new SyslogReceiver(syslogref)]
 
   val nmap = findprog("nmap")
   val traceroute = findprog("traceroute")
