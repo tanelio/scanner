@@ -76,6 +76,13 @@ package main {
     val sess = db.createSession()
     // todo: create schema
 
+    val attacks = TableQuery[Attacks]
+    val scans = TableQuery[Scans]
+    val whois = TableQuery[Whois]
+    val schema = attacks.schema ++ scans.schema ++ whois.schema
+
+    schema.create
+
     val system = ActorSystem("scanner")
 
     val nmap = findprog("nmap")
