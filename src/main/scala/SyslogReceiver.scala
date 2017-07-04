@@ -25,9 +25,9 @@ class SyslogReceiver extends Actor {
 }
 */
 
-object SyslogReceiver {
-  val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
-}
+//object SyslogReceiver {
+//  val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
+//}
 
 /*
 class SyslogReceiver(val port: Int)  extends Actor {
@@ -45,7 +45,8 @@ class SyslogReceiver(val port: Int)  extends Actor {
 
 class SyslogReceiver(nextActor: ActorRef) extends Actor {
   import context.system
-  import SyslogReceiver._
+//  import SyslogReceiver._
+  val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
   IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
 
   def receive = {

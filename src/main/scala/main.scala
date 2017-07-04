@@ -88,4 +88,9 @@ object main extends App {
 
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
+  val running = true
+  while (running)
+    Thread.sleep(1000000)
+
+  db.close()
 }
