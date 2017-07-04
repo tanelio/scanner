@@ -67,6 +67,7 @@ object main extends App {
 
   val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver="org.h2.Driver")
   val sess = db.createSession()
+  // todo: create schema
 
   val system = ActorSystem("scanner")
   val syslogref = Props[Syslog]
@@ -84,8 +85,6 @@ object main extends App {
   println(InetAddress.getByName("192.168.254.5").isSiteLocalAddress)
   println(InetAddress.getByName("162.206.51.1").isSiteLocalAddress)
   println(InetAddress.getByName("10.0.0.0").isSiteLocalAddress)
-
-  SyslogReceiver(Syslog)
 
   def findprog(prog: String): String = Seq("which", prog).!!.trim
 
