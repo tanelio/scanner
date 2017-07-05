@@ -85,11 +85,11 @@ package main {
 
     val system = ActorSystem("scanner")
 
-    val nmap = findprog("nmap")
-    val traceroute = findprog("traceroute")
-    val whois = findprog("whois")
+    val nmapprog = findprog("nmap")
+    val tracerouteprog = findprog("traceroute")
+    val whoisprog = findprog("whois")
 
-    println(nmap, traceroute, whois)
+    println(nmapprog, tracerouteprog, whoisprog)
 
     //val r = Seq(nmap, "-A", "192.168.254.5").!!
     //ruprintln(r)
