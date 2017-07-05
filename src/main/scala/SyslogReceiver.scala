@@ -8,6 +8,7 @@ import akka.io.{IO, Udp}
 package syslog {
 
   import akka.actor.Props
+  import akka.util.ByteString
 
   /**
     * Created by totala on 6/27/17.
@@ -80,9 +81,11 @@ class SyslogReceiver(val port: Int)  extends Actor {
   }
 
   class Syslog extends Actor {
+    import SyslogReceiver._
     def receive = {
-      case x =>
-        println(x)
+      case x: ByteString =>
+        logger.debug(s"Syslog: received $x")
+        println(s"msg: ${x.utf8String}")
     }
   }
 

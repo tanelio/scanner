@@ -12,6 +12,8 @@ import scala.sys.process._
 
 package main {
 
+  import syslog.SyslogReceiver
+
   /**
     * Created by totala on 6/13/17.
     */
@@ -82,6 +84,7 @@ package main {
     val whoisprog = findprog("whois")
 
     println(nmapprog, tracerouteprog, whoisprog)
+    SyslogReceiver
 
     //val r = Seq(nmap, "-A", "192.168.254.5").!!
     //ruprintln(r)
