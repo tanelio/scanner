@@ -30,11 +30,8 @@ package main {
 
   class Scans(tag: Tag) extends Table[(Int, Timestamp, Timestamp)](tag, "SCANS") {
     def ip = column[Int]("IP", O.PrimaryKey)
-
     def start = column[Timestamp]("START")
-
     def stop = column[Timestamp]("STOP")
-
     //def traceroute
     //def os
     //def ports/results
@@ -43,13 +40,9 @@ package main {
 
   class Whois(tag: Tag) extends Table[(Int, Timestamp, Timestamp, String)](tag, "WHOIS") {
     def ip = column[Int]("IP", O.PrimaryKey)
-
     def start = column[Timestamp]("START")
-
     def stop = column[Timestamp]("STOP")
-
     def who = column[String]("WHO")
-
     def * = (ip, start, stop, who)
   }
 
@@ -74,7 +67,6 @@ package main {
 
     val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     val sess = db.createSession()
-    // todo: create schema
 
     val attacks = TableQuery[Attacks]
     val scans = TableQuery[Scans]
