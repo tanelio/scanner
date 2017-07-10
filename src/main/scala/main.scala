@@ -12,6 +12,7 @@ import scala.sys.process._
 
 package main {
 
+  import ruler.Ruler
   import syslog.SyslogReceiver
 
   /**
@@ -48,16 +49,17 @@ package main {
     def * = (ip, start, stop, who)
   }
 
-  class Rules(tag: Tag) extends Table[(String, Int, Int, Int, Timestamp)](tag, "RULES") {
+  class Rules(tag: Tag) extends Table[(String, Int, Int, Int, Timestamp, Boolean)](tag, "RULES") {
     def pattern = column[String]("PATTERN")
     def reps = column[Int]("REPS")
     def findtime = column[Int]("FINDTIME")
     def bantime = column[Int]("BANTIME")
     def started = column[Timestamp]("STARTED")
+    def active = column[Boolean]("ACTIVE")
     // tcp/udp
     // ignoreip
     // target matching
-    def * = (pattern, reps, findtime, bantime, started)
+    def * = (pattern, reps, findtime, bantime, started, active)
   }
 
   /*
@@ -97,6 +99,7 @@ package main {
     val whoisprog = findprog("whois")
 
     println(nmapprog, tracerouteprog, whoisprog)
+    Ruler
     SyslogReceiver
 
     //val r = Seq(nmap, "-A", "192.168.254.5").!!
