@@ -48,6 +48,18 @@ package main {
     def * = (ip, start, stop, who)
   }
 
+  class Rules(tag: Tag) extends Table[(String, Int, Int, Int, Timestamp)](tag, "RULES") {
+    def pattern = column[String]("PATTERN")
+    def reps = column[Int]("REPS")
+    def findtime = column[Int]("FINDTIME")
+    def bantime = column[Int]("BANTIME")
+    def started = column[Timestamp]("STARTED")
+    // tcp/udp
+    // ignoreip
+    // target matching
+    def * = (pattern, reps, findtime, bantime, started)
+  }
+
   /*
  External programs:
   - nmap
@@ -73,7 +85,8 @@ package main {
     val attacks = TableQuery[Attacks]
     val scans = TableQuery[Scans]
     val whois = TableQuery[Whois]
-    val schema = attacks.schema ++ scans.schema ++ whois.schema
+    val rules = TableQuery[Rules]
+    val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema
 
     schema.create
 
