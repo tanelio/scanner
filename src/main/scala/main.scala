@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 
 //import akka.event.Logging
 import slick.jdbc.H2Profile.api._
-import scala.concurrent.ExecutionContext.Implicits.global
 import slick.lifted.Tag
 
 import scala.sys.process._
@@ -17,7 +16,7 @@ package main {
   import slick.dbio.DBIOAction
   import syslog.SyslogReceiver
 
-  import scala.concurrent.{Await, Future}
+  import scala.concurrent.Await
 
   /**
     * Created by totala on 6/13/17.
@@ -104,8 +103,9 @@ package main {
     val nmapprog = findprog("nmap")
     val tracerouteprog = findprog("traceroute")
     val whoisprog = findprog("whois")
+    val iptablesprog = findprog("iptables")
 
-    println(nmapprog, tracerouteprog, whoisprog)
+    println(nmapprog, tracerouteprog, whoisprog, iptablesprog)
 
     Ruler
     SyslogReceiver
