@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 
 //import akka.event.Logging
 import slick.jdbc.H2Profile.api._
+import scala.concurrent.ExecutionContext.Implicits.global
 import slick.lifted.Tag
 
 import scala.sys.process._
@@ -13,7 +14,10 @@ import scala.sys.process._
 package main {
 
   import ruler.Ruler
+  import slick.dbio.DBIOAction
   import syslog.SyslogReceiver
+
+  import scala.concurrent.{Await, Future}
 
   /**
     * Created by totala on 6/13/17.
@@ -49,17 +53,18 @@ package main {
     def * = (ip, start, stop, who)
   }
 
-  class Rules(tag: Tag) extends Table[(String, Int, Int, Int, Timestamp, Boolean)](tag, "RULES") {
+  class Rules(tag: Tag) extends Table[(Int, String, Int, Int, Int, Timestamp, String)](tag, "RULES") {
+    def id = column[Int]("ID", O.PrimaryKey)
     def pattern = column[String]("PATTERN")
     def reps = column[Int]("REPS")
     def findtime = column[Int]("FINDTIME")
     def bantime = column[Int]("BANTIME")
     def started = column[Timestamp]("STARTED")
-    def active = column[Boolean]("ACTIVE")
+    def active = column[String]("ACTIVE")
     // tcp/udp
     // ignoreip
     // target matching
-    def * = (pattern, reps, findtime, bantime, started, active)
+    def * = (id, pattern, reps, findtime, bantime, started, active)
   }
 
   /*
@@ -74,6 +79,7 @@ package main {
  */
 
   object main extends App {
+    import scala.concurrent.duration._
 
     val logger = LoggerFactory.getLogger("main")
 
@@ -88,9 +94,10 @@ package main {
     val scans = TableQuery[Scans]
     val whois = TableQuery[Whois]
     val rules = TableQuery[Rules]
-    val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema
 
-    schema.create
+//    Future.sequence(schema.create).onComplete()
+    // schema.create
+    Await.result(db.run(DBIOAction.seq((attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema).create)), 30 seconds)
 
     val system = ActorSystem("scanner")
 
@@ -99,6 +106,7 @@ package main {
     val whoisprog = findprog("whois")
 
     println(nmapprog, tracerouteprog, whoisprog)
+
     Ruler
     SyslogReceiver
 
