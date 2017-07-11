@@ -24,8 +24,10 @@ package ruler {
         }
     })
 
+    println(s"${Rules.size} rules loaded")
+
     /*
-     * This should have worked... probably import collisions...
+     * This should have worked... probably import collisions... slick 3.2.0 is a bit rough.
      *
     db.run(for (r <- rules if r.active === "Y") {
       println(r.pattern)
