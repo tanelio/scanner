@@ -13,11 +13,10 @@ package syslog {
     * Created by totala on 6/27/17.
     */
 
-  /*
+/*
 class SyslogReceiver extends Actor {
   private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
   private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
-
 */
 
   object SyslogReceiver {

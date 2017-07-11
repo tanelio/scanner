@@ -53,14 +53,14 @@ package main {
     def * = (ip, start, stop, who)
   }
 
-  class Rules(tag: Tag) extends Table[(Int, String, Int, Int, Int, Timestamp, String)](tag, "RULES") {
+  class Rules(tag: Tag) extends Table[(Int, String, Int, Int, Int, Timestamp, Boolean)](tag, "RULES") {
     def id = column[Int]("ID", O.PrimaryKey)
     def pattern = column[String]("PATTERN")
     def reps = column[Int]("REPS")
     def findtime = column[Int]("FINDTIME")
     def bantime = column[Int]("BANTIME")
     def started = column[Timestamp]("STARTED")
-    def active = column[String]("ACTIVE")
+    def active = column[Boolean]("ACTIVE")
     // tcp/udp
     // ignoreip
     // target matching
