@@ -3,9 +3,10 @@
   */
 import java.sql.Timestamp
 
+import main.main.{db, rules}
 import slick.jdbc.H2Profile.api._
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import main.main.{db, rules, sess}
 
 package ruler {
 
@@ -19,7 +20,7 @@ package ruler {
     db.run(rules.result).map(_.foreach {
       case (id, pattern, reps, findtime, bantime, started, active) =>
         if (active) {
-          println(id, pattern, reps, findtime)
+          println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
           Rules += (id -> (pattern, reps, findtime, bantime, started))
         }
     })
@@ -33,6 +34,20 @@ package ruler {
       println(r.pattern)
     })
     */
+  }
+
+  class date(x: String) {
+
+    def date(x: String): String = {
+      val mtht = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
+      val mthft = "january|february|march|april|may|june|july|august|september|october|november|december"
+      val wdayt = "mon|tues|wed|thur|fri|sat|sun"
+      val wdayft = "monday|tuesday|wednesday|thursday|friday|saturday|sunday"
+      val day = "[0-3][0-9]"
+      val mth = "01|02|03|04|05|06|07|08|09|10|11|12"
+      val year = "19[7-9][0-9]|20[0-3][0-9]"
+      ""
+   }
   }
 
 }
