@@ -59,6 +59,7 @@ package ruler {
   }
 
   class parse(x: String) {
+    private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
   }
 
