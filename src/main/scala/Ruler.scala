@@ -50,4 +50,10 @@ package ruler {
    }
   }
 
+  class tokenizer(x: String)
+  {
+    val splits = " ,:.".toArray
+    x.split(splits).filter(_.nonEmpty)
+  }
+
 }
