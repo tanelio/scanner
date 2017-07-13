@@ -10,6 +10,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 package ruler {
 
+  import java.text.SimpleDateFormat
+
   import scala.collection.mutable
 
   object Ruler {
@@ -54,6 +56,10 @@ package ruler {
   {
     val splits = " ,:.".toArray
     x.split(splits).filter(_.nonEmpty)
+  }
+
+  class parse(x: String) {
+    private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
   }
 
 }

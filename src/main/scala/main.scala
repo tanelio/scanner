@@ -22,6 +22,7 @@ package main {
     * Created by totala on 6/13/17.
     */
 
+  // Evils: Super | Genius | Resident | Casual | Happles
   class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Char, Int, Int, Int, String)](tag, "ATTACKS") {
     def id = column[Int]("SUP_ID", O.PrimaryKey) // This is the primary key column
     def ts = column[Timestamp]("TS") // When incident occurred
@@ -29,9 +30,9 @@ package main {
     def ll = column[Char]("LL") // LinkLocal [Y|N] don't scan locals
     def dip = column[Int]("DIP") // DestinationIP
     def dport = column[Int]("DPORT") // Destination Port
-    def typ = column[Int]("TYPE") // Type of incident/attack, ToDo: Create Enum
+    def evil = column[Int]("TYPE") // Type of incident/attack, ToDo: Create Enum
     def desc = column[String]("TXT") // Syslog line of incident
-    def * = (id, ts, sip, ll, dip, dport, typ, desc)
+    def * = (id, ts, sip, ll, dip, dport, evil, desc)
   }
 
   class Scans(tag: Tag) extends Table[(Int, Timestamp, Timestamp)](tag, "SCANS") {
