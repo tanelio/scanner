@@ -64,6 +64,11 @@ package ruler {
 
     // Take x, parse date, get the lenth of date parsed as offset
     // run, rules against the rest, instantiate (or call) FSMs as needed.
+
+    // RuleFSM:
+    //  - if key'ed off sourceIP, then instantiate another for every new IP
+    //  - the FSM needs to have the IP & timestamp
+    //  - rule should define whether sourceIP is the key
   }
 
 }
