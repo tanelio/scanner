@@ -60,6 +60,7 @@ package ruler {
   }
 
   class parse(x: String) {
+    import ruler.Ruler.Rules
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
 
@@ -74,8 +75,8 @@ package ruler {
     val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
-    for (r <- Rules) {
-
+    for ((id, pat, reps, ft, bt, st) <- Rules) {
+      if (str match pat
     }
   }
 

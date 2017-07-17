@@ -87,7 +87,7 @@ package main {
     args foreach print _
     println()
 
-    val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+    val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     val sess = db.createSession()
 
     val attacks = TableQuery[Attacks]
