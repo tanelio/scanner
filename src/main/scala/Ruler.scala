@@ -24,14 +24,14 @@ package ruler {
       case (id, pattern, reps, findtime, bantime, started, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (pattern.r, reps, findtime, bantime, started, active))
+          Rules += (id -> (new Regex(pattern), reps, findtime, bantime, started, active))
         }
     })
 
     println(s"${Rules.size} rules loaded")
 
     /*
-     * This should have worked... probably import collisions... slick 3.2.0 is a bit rough.
+     * This should have worked... probably import conflict... slick 3.2.0 is a bit rough.
      *
     db.run(for (r <- rules if r.active === "Y") {
       println(r.pattern)
@@ -75,9 +75,9 @@ package ruler {
     val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
-    for ((id, pat, reps, ft, bt, st, active) <- Rules if active) {
+    for ((id, (pat, reps, ft, bt, st, active)) <- Rules if active) {
       str match {
-        case pat =>
+        case pat(ip) =>
       }
     }
   }
