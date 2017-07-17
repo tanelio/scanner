@@ -13,17 +13,18 @@ package ruler {
   import java.text.SimpleDateFormat
 
   import scala.collection.mutable
+  import scala.util.matching.Regex
 
   object Ruler {
 
-    var Rules = mutable.HashMap.empty[Int, (String, Int, Int, Int, Timestamp)]
+    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Timestamp)]
 
     // initialize rules from db
     db.run(rules.result).map(_.foreach {
       case (id, pattern, reps, findtime, bantime, started, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (pattern, reps, findtime, bantime, started))
+          Rules += (id -> (pattern.r, reps, findtime, bantime, started))
         }
     })
 
@@ -69,6 +70,13 @@ package ruler {
     //  - if key'ed off sourceIP, then instantiate another for every new IP
     //  - the FSM needs to have the IP & timestamp
     //  - rule should define whether sourceIP is the key
+
+    val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
+    val host = x.drop(16).takeWhile(! _.isSpaceChar)
+    val str = x.drop(16 + host.length + 1)
+    for (r <- Rules) {
+
+    }
   }
 
 }
