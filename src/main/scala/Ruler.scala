@@ -12,12 +12,15 @@ package ruler {
 
   import java.text.SimpleDateFormat
 
+  import akka.actor.ActorRef
+
   import scala.collection.mutable
   import scala.util.matching.Regex
 
   object Ruler {
 
     var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Timestamp, Boolean)]
+    var ruleActors = mutable.HashMap.empty[Int, (ActorRef, Int)]
 
     // initialize rules from db
     db.run(rules.result).map(_.foreach {
