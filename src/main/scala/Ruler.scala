@@ -17,7 +17,7 @@ package ruler {
 
   object Ruler {
 
-    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Timestamp)]
+    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Timestamp, Boolean)]
 
     // initialize rules from db
     db.run(rules.result).map(_.foreach {
