@@ -76,7 +76,9 @@ package ruler {
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
     for ((id, pat, reps, ft, bt, st) <- Rules) {
-      if (str match pat
+      str match {
+        case pat =>
+      }
     }
   }
 
