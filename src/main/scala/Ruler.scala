@@ -24,7 +24,7 @@ package ruler {
       case (id, pattern, reps, findtime, bantime, started, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (pattern.r, reps, findtime, bantime, started))
+          Rules += (id -> (pattern.r, reps, findtime, bantime, started, active))
         }
     })
 
@@ -75,7 +75,7 @@ package ruler {
     val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
-    for ((id, pat, reps, ft, bt, st) <- Rules) {
+    for ((id, pat, reps, ft, bt, st, active) <- Rules if active) {
       str match {
         case pat =>
       }
