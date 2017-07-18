@@ -42,6 +42,9 @@ package ruler {
     */
   }
 
+  /*
+   * Future: build a date recognizer/adjusting configurator
+   *
   class date(x: String) {
 
     def date(x: String): String = {
@@ -61,6 +64,7 @@ package ruler {
     val splits = " ,:.".toArray
     x.split(splits).filter(_.nonEmpty)
   }
+  */
 
   class parse(x: String) {
     import ruler.Ruler.Rules
