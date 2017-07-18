@@ -1,8 +1,6 @@
 /**
   * Created by totala on 7/9/17.
   */
-import java.sql.Timestamp
-
 import main.main.{db, rules}
 import slick.jdbc.H2Profile.api._
 
@@ -19,15 +17,17 @@ package ruler {
 
   object Ruler {
 
-    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Timestamp, Boolean)]
+    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
     var ruleActors = mutable.HashMap.empty[Int, (ActorRef, Int)]
+    val ip = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
     db.run(rules.result).map(_.foreach {
-      case (id, pattern, reps, findtime, bantime, started, active) =>
+      case (id, pattern, reps, findtime, bantime, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (new Regex(pattern), reps, findtime, bantime, started, active))
+          // ToDo: replace $ip with ip
+          Rules += (id -> (new Regex(pattern), reps, findtime, bantime, active))
         }
     })
 
@@ -82,7 +82,7 @@ package ruler {
     val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
-    for ((id, (pat, reps, ft, bt, st, active)) <- Rules if active) {
+    for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
         case pat(ip) =>
       }
