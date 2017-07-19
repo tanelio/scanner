@@ -19,15 +19,15 @@ package ruler {
 
     var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
     var ruleActors = mutable.HashMap.empty[Int, (ActorRef, Int)]
-    val ip = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+    val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
     db.run(rules.result).map(_.foreach {
       case (id, pattern, reps, findtime, bantime, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (new Regex(pattern.replaceAllLiterally("$ip", ip)), reps, findtime, bantime, active))
-          println("=> ", pattern.replaceAllLiterally("$ip", ip))
+          Rules += (id -> (new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime, active))
+          println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
         }
     })
 
@@ -84,7 +84,7 @@ package ruler {
     val str = x.drop(16 + host.length + 1)
     for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
-        case pat(ip) =>
+        case pat(ip) => // We know the id, and the ip... hunt down the instance
       }
     }
   }
