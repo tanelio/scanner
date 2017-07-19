@@ -26,8 +26,7 @@ package ruler {
       case (id, pattern, reps, findtime, bantime, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          // ToDo: replace $ip with ip
-          Rules += (id -> (new Regex(pattern), reps, findtime, bantime, active))
+          Rules += (id -> (new Regex(pattern.replaceAllLiterally("$ip", ip)), reps, findtime, bantime, active))
         }
     })
 
