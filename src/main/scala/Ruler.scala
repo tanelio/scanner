@@ -89,7 +89,7 @@ package ruler {
           if (ruleInst.contains(id)) {
             ruleInst
           } else {
-            ruleInst += id -> (ip -> now, 0)
+            ruleInst(id) = (ip -> now, 0)
           }
       }
     }
