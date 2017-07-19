@@ -18,7 +18,7 @@ package ruler {
   object Ruler {
 
     var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
-    var ruleActors = mutable.HashMap.empty[Int, (ActorRef, Int)]
+    var ruleInst = mutable.HashMap.empty[Int, mutable.HashMap.empty[String, (Int, Int)]]
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
@@ -67,7 +67,7 @@ package ruler {
   */
 
   class parse(x: String) {
-    import ruler.Ruler.Rules
+    import ruler.Ruler._
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
 
@@ -82,9 +82,15 @@ package ruler {
     val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
+    val now = System.currentTimeMillis()
     for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
         case pat(ip) => // We know the id, and the ip... hunt down the instance
+          if (ruleInst.contains(id)) {
+            ruleInst
+          } else {
+            ruleInst += id -> (ip -> now, 0)
+          }
       }
     }
   }
