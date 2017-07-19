@@ -2,8 +2,6 @@ import java.sql.Timestamp
 
 import akka.actor.ActorSystem
 import org.slf4j.LoggerFactory
-
-//import akka.event.Logging
 import slick.jdbc.H2Profile.api._
 import slick.lifted.Tag
 
@@ -12,7 +10,6 @@ import scala.sys.process._
 package main {
 
   import ruler.Ruler
-  import slick.dbio.DBIOAction
   import syslog.SyslogReceiver
 
   import scala.concurrent.Await
@@ -22,12 +19,12 @@ package main {
     */
 
   // Evils: Super | Genius | Resident | Casual | Happles
-  class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Char, Int, Int, Int, String)](tag, "ATTACKS") {
+  class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Boolean, String, Int, Int, String)](tag, "ATTACKS") {
     def id = column[Int]("SUP_ID", O.PrimaryKey) // This is the primary key column
     def ts = column[Timestamp]("TS") // When incident occurred
     def sip = column[Int]("SIP") // SourceIP
-    def ll = column[Char]("LL") // LinkLocal [Y|N] don't scan locals
-    def dip = column[Int]("DIP") // DestinationIP
+    def ll = column[Boolean]("LL") // LinkLocal [Y|N] don't scan locals
+    def dip = column[String]("DIP") // DestinationIP
     def dport = column[Int]("DPORT") // Destination Port
     def evil = column[Int]("TYPE") // Type of incident/attack, ToDo: Create Enum
     def desc = column[String]("TXT") // Syslog line of incident

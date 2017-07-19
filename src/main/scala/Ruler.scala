@@ -1,13 +1,15 @@
 /**
   * Created by totala on 7/9/17.
   */
-import main.main.{db, rules}
+import main.main.{db, rules, attacks}
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 package ruler {
 
+  import java.net.InetAddress
+  import java.net.InetAddress._
   import java.text.SimpleDateFormat
 
   import akka.actor.ActorRef
@@ -68,6 +70,7 @@ package ruler {
 
   class parse(x: String) {
     import ruler.Ruler._
+
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
 
@@ -86,6 +89,7 @@ package ruler {
     for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
         case pat(ip) => // We know the id, and the ip... hunt down the instance
+          attacks += (0, dt, ip, getByName(ip).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
             ruleInst
           } else {
