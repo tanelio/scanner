@@ -27,6 +27,7 @@ package ruler {
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
           Rules += (id -> (new Regex(pattern.replaceAllLiterally("$ip", ip)), reps, findtime, bantime, active))
+          println("=> ", pattern.replaceAllLiterally("$ip", ip))
         }
     })
 
