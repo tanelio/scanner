@@ -10,6 +10,7 @@ package ruler {
 
   import java.net.InetAddress
   import java.net.InetAddress._
+  import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
   import akka.actor.ActorRef
@@ -89,7 +90,7 @@ package ruler {
     for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
         case pat(ip) => // We know the id, and the ip... hunt down the instance
-          attacks += (0, dt, ip, getByName(ip).isSiteLocalAddress, host, 0, 0, str)
+          attacks += (0, new Timestamp(dt.getTime), ip, getByName(ip).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
             ruleInst
           } else {
