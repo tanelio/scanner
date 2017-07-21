@@ -21,7 +21,7 @@ package ruler {
   object Ruler {
 
     var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
-    type Inst = mutable.HashMap[Int, (Int, Int)]
+    type Inst = mutable.HashMap[Int, (Long, Int)]
     var ruleInst = mutable.HashMap.empty[Int, Inst]
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
@@ -96,9 +96,9 @@ package ruler {
           val ip = coerceToInteger(forString(ips))
           attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
-            ruleInst
+           // ruleInst
           } else {
-            ruleInst(id) = (ip -> now, 0)
+            ruleInst(id) = (now, 0)
           }
       }
     }
