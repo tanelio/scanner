@@ -21,7 +21,8 @@ package ruler {
   object Ruler {
 
     var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
-    var ruleInst = mutable.HashMap.empty[Int, mutable.HashMap.empty[String, (Int, Int)]]
+    type Inst = mutable.HashMap[Int, (Int, Int)]
+    var ruleInst = mutable.HashMap.empty[Int, Inst]
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
