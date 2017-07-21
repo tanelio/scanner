@@ -1,19 +1,15 @@
 /**
   * Created by totala on 7/9/17.
   */
-import main.main.{db, rules, attacks}
+import main.main.{attacks, db, rules}
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 package ruler {
 
-  import java.net.InetAddress
   import java.net.InetAddress._
-  import java.sql.Timestamp
   import java.text.SimpleDateFormat
-
-  import akka.actor.ActorRef
 
   import scala.collection.mutable
   import scala.util.matching.Regex
@@ -72,8 +68,10 @@ package ruler {
 
   class parse(x: String) {
     import java.sql.Timestamp
-    import ruler.Ruler._
+
     import com.google.common.net.InetAddresses._
+    import ruler.Ruler._
+    type Inst = mutable.HashMap[Int, (Long, Int)]
 
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
@@ -98,7 +96,7 @@ package ruler {
           if (ruleInst.contains(id)) {
            // ruleInst
           } else {
-            ruleInst(id) = (now, 0)
+            ruleInst(id) += (ip -> (now, 0))
           }
       }
     }
