@@ -70,7 +70,9 @@ package ruler {
   */
 
   class parse(x: String) {
+    import java.sql.Timestamp
     import ruler.Ruler._
+    import com.google.common.net.InetAddresses._
 
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
@@ -83,14 +85,15 @@ package ruler {
     //  - the FSM needs to have the IP & timestamp
     //  - rule should define whether sourceIP is the key
 
-    val dt = OLD_SYSLOG_DATE_FORMAT.parse(x) // 15+1 characters for date
+    val dt = OLD_SYSLOG_DATE_FORMAT.parse(x).getTime // 15+1 characters for date
     val host = x.drop(16).takeWhile(! _.isSpaceChar)
     val str = x.drop(16 + host.length + 1)
     val now = System.currentTimeMillis()
     for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
       str match {
-        case pat(ip) => // We know the id, and the ip... hunt down the instance
-          attacks += (0, new Timestamp(dt.getTime), ip, getByName(ip).isSiteLocalAddress, host, 0, 0, str)
+        case pat(ips) => // We know the id, and the ip... hunt down the instance
+          val ip = coerceToInteger(forString(ips))
+          attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
             ruleInst
           } else {
