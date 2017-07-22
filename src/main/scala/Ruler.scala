@@ -94,10 +94,11 @@ package ruler {
           val ip = coerceToInteger(forString(ips))
           attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
-            ruleInst(id)
-          } else {
+            if (ruleInst(id).contains(ip)) {
+              ruleInst(id) = ruleInst(id).getOrElse(mutable.HashMap(ip -> (now, 0)))
+            }
+          } else
             ruleInst(id) += (ip -> (now, 0))
-          }
       }
     }
   }
