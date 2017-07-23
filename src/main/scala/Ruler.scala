@@ -95,7 +95,7 @@ package ruler {
           attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
           if (ruleInst.contains(id)) {
             if (ruleInst(id).contains(ip)) {
-              ruleInst(id) = ruleInst(id).getOrElse(mutable.HashMap(ip -> (now, 0)))
+              ruleInst(id) = ruleInst.getOrElse(id, mutable.HashMap(ip -> (now, 0)))
             }
           } else
             ruleInst(id) += (ip -> (now, 0))
