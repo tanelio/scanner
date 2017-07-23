@@ -6,7 +6,7 @@ import akka.io.{IO, Udp}
 
 package syslog {
 
-  import akka.actor.Props
+  import akka.actor.{Props, ReceiveTimeout}
   import akka.util.ByteString
 
   /**
@@ -27,8 +27,8 @@ package syslog {
   class SyslogReceiver extends Actor {
 
     import context.system
-
     import SyslogReceiver._
+
     IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
 
     def receive = {
@@ -51,12 +51,20 @@ package syslog {
   }
 
   class Syslog extends Actor {
-    import SyslogReceiver._
+    import SyslogReceiver.logger
+    import scala.concurrent.duration._
+    import ruler.Ruler.{parse, prune}
+
+    context.setReceiveTimeout(30 seconds)
     def receive = {
       case x: ByteString =>
         logger.debug(s"Syslog: received $x")
         println(s"msg: ${x.utf8String}")
+        parse(x.utf8String)
+      case ReceiveTimeout =>
+        prune
     }
   }
+
 
 }

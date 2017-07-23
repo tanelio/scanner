@@ -40,6 +40,45 @@ package ruler {
       println(r.pattern)
     })
     */
+
+    private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
+
+    def parse(x: String) {
+      import java.sql.Timestamp
+      import com.google.common.net.InetAddresses._
+
+      // Take x, parse date, get the lenth of date parsed as offset
+      // run, rules against the rest, instantiate (or call) FSMs as needed.
+
+      // RuleFSM:
+      //  - if key'ed off sourceIP, then instantiate another for every new IP
+      //  - the FSM needs to have the IP & timestamp
+      //  - rule should define whether sourceIP is the key
+
+      val dt = OLD_SYSLOG_DATE_FORMAT.parse(x).getTime // 15+1 characters for date
+      val host = x.drop(16).takeWhile(!_.isSpaceChar)
+      val str = x.drop(16 + host.length + 1)
+      val now = System.currentTimeMillis()
+      for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
+        str match {
+          case pat(ips) => // We know the id, and the ip... hunt down the instance
+            val ip = coerceToInteger(forString(ips))
+            attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
+            if (ruleInst.contains(id)) {
+              if (ruleInst(id).contains(ip)) {
+                ruleInst(id) = ruleInst.getOrElse(id, mutable.HashMap(ip -> (dt, 0)))
+              }
+            } else
+              ruleInst(id) += (ip -> (dt, 0))
+        }
+      }
+    }
+
+    def prune: Unit = {
+
+    }
+
   }
 
   /*
@@ -65,42 +104,5 @@ package ruler {
     x.split(splits).filter(_.nonEmpty)
   }
   */
-
-  class parse(x: String) {
-    import java.sql.Timestamp
-
-    import com.google.common.net.InetAddresses._
-    import ruler.Ruler._
-    type Inst = mutable.HashMap[Int, (Long, Int)]
-
-    private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
-
-    // Take x, parse date, get the lenth of date parsed as offset
-    // run, rules against the rest, instantiate (or call) FSMs as needed.
-
-    // RuleFSM:
-    //  - if key'ed off sourceIP, then instantiate another for every new IP
-    //  - the FSM needs to have the IP & timestamp
-    //  - rule should define whether sourceIP is the key
-
-    val dt = OLD_SYSLOG_DATE_FORMAT.parse(x).getTime // 15+1 characters for date
-    val host = x.drop(16).takeWhile(! _.isSpaceChar)
-    val str = x.drop(16 + host.length + 1)
-    val now = System.currentTimeMillis()
-    for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
-      str match {
-        case pat(ips) => // We know the id, and the ip... hunt down the instance
-          val ip = coerceToInteger(forString(ips))
-          attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
-          if (ruleInst.contains(id)) {
-            if (ruleInst(id).contains(ip)) {
-              ruleInst(id) = ruleInst.getOrElse(id, mutable.HashMap(ip -> (now, 0)))
-            }
-          } else
-            ruleInst(id) += (ip -> (now, 0))
-      }
-    }
-  }
 
 }
