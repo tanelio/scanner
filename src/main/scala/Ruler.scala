@@ -9,9 +9,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 package ruler {
 
   import java.net.InetAddress._
+  import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
   import akka.actor.Actor
+  import com.google.common.net.InetAddresses.{coerceToInteger, forString}
 
   import scala.collection.mutable
   import scala.util.matching.Regex
@@ -28,7 +30,7 @@ package ruler {
       case (id, pattern, reps, findtime, bantime, active) =>
         if (active) {
           println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          Rules += (id -> (new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime, active))
+          new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
           println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
         }
     })
@@ -43,15 +45,16 @@ package ruler {
     })
     */
 
-    case class Line(x: String)
-    class rule(val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+    case class Line(l: String, dt: Long, host: String, str: String)
+    class rule(val id: Int, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+      val instances = mutable.HashMap.empty[Int, Int]
       def receive = {
-        case Line(l) =>
+        case Line(l, dt, host, str) =>
           l match {
             case pat(ips) =>
+              val ip = coerceToInteger(forString(ips))
+              attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
           }
-
-
       }
     }
 
