@@ -11,6 +11,8 @@ package ruler {
   import java.net.InetAddress._
   import java.text.SimpleDateFormat
 
+  import akka.actor.Actor
+
   import scala.collection.mutable
   import scala.util.matching.Regex
 
@@ -40,6 +42,18 @@ package ruler {
       println(r.pattern)
     })
     */
+
+    case class Line(x: String)
+    class rule(val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+      def receive = {
+        case Line(l) =>
+          l match {
+            case pat(ips) =>
+          }
+
+
+      }
+    }
 
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
