@@ -28,6 +28,7 @@ package ruler {
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
+    /*
     db.run(rules.result).map(_.foreach {
       case (id, pattern, reps, findtime, bantime, active) =>
         if (active) {
@@ -36,8 +37,9 @@ package ruler {
           println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
         }
     })
+    */
 
-    println(s"${Rules.size} rules loaded")
+    //println(s"${Rules.size} rules loaded")
 
     val rulerref = system.actorOf(Props[ruler])
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -46,9 +48,18 @@ package ruler {
     class ruler extends Actor {
       import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, Router}
       var router = {
-        val routees = Vector {
-
-        }
+        val routees = Vector.empty[ActorRefRoutee]
+        db.run(rules.result).map(_.foreach {
+          case (id, pattern, reps, findtime, bantime, active) =>
+            if (active) {
+              println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
+              val r = context.actorOf(Props[rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)])
+              context watch r
+              ActorRefRoutee(r)
+              //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
+              println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
+            }
+        })
         Router(BroadcastRoutingLogic(), routees)
       }
       def receive = {
