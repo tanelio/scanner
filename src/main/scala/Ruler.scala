@@ -52,7 +52,9 @@ package ruler {
         case (id, pattern, reps, findtime, bantime, active) =>
           if (active) {
             println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-            val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
+            // val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
+            //   val props = Props(classOf[MyActor], arg1, arg2)
+            val r = context.actorOf(Props(classOf[rule], id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime))
             context watch r
             router = router.addRoutee(r)
             //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
