@@ -69,7 +69,7 @@ package ruler {
 //          val now = System.currentTimeMillis()
 //          router.route(w, sender())
 //          routees ! Line(str, dt, host, off)
-          router ! Broadcast(Line(str, dt, host, off))
+          router ! Line(str, dt, host, off)
       }
     }
 
