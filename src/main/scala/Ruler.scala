@@ -13,6 +13,7 @@ package ruler {
   import java.text.SimpleDateFormat
 
   import akka.actor.{Actor, Props}
+  import akka.routing.Broadcast
   import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
 
@@ -21,10 +22,6 @@ package ruler {
   import main.main._
 
   object Ruler {
-
-    var Rules = mutable.HashMap.empty[Int, (Regex, Int, Int, Int, Boolean)]
-    type Inst = mutable.HashMap[Int, (Long, Int)]
-    var ruleInst = mutable.HashMap.empty[Int, Inst]
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
     // initialize rules from db
@@ -49,19 +46,20 @@ package ruler {
       import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, Router}
       var router = {
         val routees = Vector.empty[ActorRefRoutee]
-        db.run(rules.result).map(_.foreach {
-          case (id, pattern, reps, findtime, bantime, active) =>
-            if (active) {
-              println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-              val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
-              context watch r
-              ActorRefRoutee(r)
-              //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
-              println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
-            }
-        })
         Router(BroadcastRoutingLogic(), routees)
       }
+      db.run(rules.result).map(_.foreach {
+        case (id, pattern, reps, findtime, bantime, active) =>
+          if (active) {
+            println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
+            val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
+            context watch r
+            router = router.addRoutee(r)
+            //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
+            println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
+          }
+      })
+      println(s"${router.routees.size} rules loaded")
       def receive = {
         case x: ByteString =>
           val str = x.utf8String
@@ -69,8 +67,9 @@ package ruler {
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
           val off = 16 + host.length + 1
 //          val now = System.currentTimeMillis()
-          router.route(w, sender())
-          routees ! Line(str, dt, host, off)
+//          router.route(w, sender())
+//          routees ! Line(str, dt, host, off)
+          router ! Broadcast(Line(str, dt, host, off))
       }
     }
 
