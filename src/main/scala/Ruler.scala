@@ -12,7 +12,7 @@ package ruler {
   import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
-  import akka.actor.{Actor, Props}
+  import akka.actor.{Actor, Props, Terminated}
   import akka.routing.Broadcast
   import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
@@ -69,16 +69,21 @@ package ruler {
 //          val now = System.currentTimeMillis()
 //          router.route(w, sender())
 //          routees ! Line(str, dt, host, off)
-          router ! Line(str, dt, host, off)
+//          router ! Line(str, dt, host, off)
+//          router ! Broadcast("test")
+          router.route(Line(str, dt, host, off), sender())
+        case Terminated(a) =>
       }
     }
 
     case class Line(l: String, dt: Long, host: String, off: Int)
     case class Prune()
     class rule(val id: Int, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+      println(s"Actor id#$id started")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
       def receive = {
         case Line(l, dt, host, off) =>
+          println(s"Actor id#$id received '$l'")
           l.drop(off) match {
             case pat(ips) =>
               val ip = coerceToInteger(forString(ips))
