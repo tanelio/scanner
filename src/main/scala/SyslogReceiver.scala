@@ -17,8 +17,6 @@ package syslog {
     import main.main._
 
     val logger = LoggerFactory.getLogger(classOf[SyslogReceiver])
-
-    val syslogref = system.actorOf(Props[Syslog])
     val syslogreceiverref = system.actorOf(Props[SyslogReceiver])
   }
 
@@ -28,6 +26,7 @@ package syslog {
 
     import context.system
     import SyslogReceiver._
+    import ruler.Ruler._
 
     IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
 
@@ -40,7 +39,7 @@ package syslog {
     def ready(socket: ActorRef): Receive = {
       case Udp.Received(data, remote) =>
         logger.debug(s"SyslogReceiver/Received: $data")
-        syslogref ! data
+        rulerref ! data
       case Udp.Unbind =>
         logger.info(s"SyslogReceiver/Unbind")
         socket ! Udp.Unbind
@@ -49,22 +48,4 @@ package syslog {
         context.stop(self)
     }
   }
-
-  class Syslog extends Actor {
-    import SyslogReceiver.logger
-    import scala.concurrent.duration._
-    import ruler.Ruler.{parse, prune}
-
-    context.setReceiveTimeout(30 seconds)
-    def receive = {
-      case x: ByteString =>
-        logger.debug(s"Syslog: received $x")
-        println(s"msg: ${x.utf8String}")
-        parse(x.utf8String)
-      case ReceiveTimeout =>
-        prune
-    }
-  }
-
-
 }

@@ -12,11 +12,13 @@ package ruler {
   import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
-  import akka.actor.Actor
+  import akka.actor.{Actor, Props}
+  import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
 
   import scala.collection.mutable
   import scala.util.matching.Regex
+  import main.main._
 
   object Ruler {
 
@@ -37,89 +39,46 @@ package ruler {
 
     println(s"${Rules.size} rules loaded")
 
-    /*
-     * This should have worked... probably import conflict... slick 3.2.0 is a bit rough.
-     *
-    db.run(for (r <- rules if r.active === "Y") {
-      println(r.pattern)
-    })
-    */
-
-    case class Line(l: String, dt: Long, host: String, str: String)
-    class rule(val id: Int, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
-      val instances = mutable.HashMap.empty[Int, Int]
-      def receive = {
-        case Line(l, dt, host, str) =>
-          l match {
-            case pat(ips) =>
-              val ip = coerceToInteger(forString(ips))
-              attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
-          }
-      }
-    }
-
+    val rulerref = system.actorOf(Props[ruler])
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
 
-    def parse(x: String) {
-      import java.sql.Timestamp
-      import com.google.common.net.InetAddresses._
+    class ruler extends Actor {
+      import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, Router}
+      var router = {
+        val routees = Vector {
 
-      // Take x, parse date, get the lenth of date parsed as offset
-      // run, rules against the rest, instantiate (or call) FSMs as needed.
-
-      // RuleFSM:
-      //  - if key'ed off sourceIP, then instantiate another for every new IP
-      //  - the FSM needs to have the IP & timestamp
-      //  - rule should define whether sourceIP is the key
-
-      val dt = OLD_SYSLOG_DATE_FORMAT.parse(x).getTime // 15+1 characters for date
-      val host = x.drop(16).takeWhile(!_.isSpaceChar)
-      val str = x.drop(16 + host.length + 1)
-      val now = System.currentTimeMillis()
-      for ((id, (pat, reps, ft, bt, active)) <- Rules if active) {
-        str match {
-          case pat(ips) => // We know the id, and the ip... hunt down the instance
-            val ip = coerceToInteger(forString(ips))
-            attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, str)
-            if (ruleInst.contains(id)) {
-              if (ruleInst(id).contains(ip)) {
-                ruleInst(id) = ruleInst.getOrElse(id, mutable.HashMap(ip -> (dt, 0)))
-              }
-            } else
-              ruleInst(id) += (ip -> (dt, 0))
         }
+        Router(BroadcastRoutingLogic(), routees)
+      }
+      def receive = {
+        case x: ByteString =>
+          val str = x.utf8String
+          val dt = OLD_SYSLOG_DATE_FORMAT.parse(str).getTime // 15+1 characters for date
+          val host = str.drop(16).takeWhile(!_.isSpaceChar)
+          val off = 16 + host.length + 1
+//          val now = System.currentTimeMillis()
+          router.route(w, sender())
+          routees ! Line(str, dt, host, off)
       }
     }
 
-    def prune: Unit = {
+    case class Line(l: String, dt: Long, host: String, off: Int)
+    case class Prune()
+    class rule(val id: Int, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+      val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
+      def receive = {
+        case Line(l, dt, host, off) =>
+          l.drop(off) match {
+            case pat(ips) =>
+              val ip = coerceToInteger(forString(ips))
+              attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
+          }
+        case Prune =>
 
+      }
     }
-
   }
 
-  /*
-   * Future: build a date recognizer/adjusting configurator
-   *
-  class date(x: String) {
-
-    def date(x: String): String = {
-      val mtht = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
-      val mthft = "january|february|march|april|may|june|july|august|september|october|november|december"
-      val wdayt = "mon|tues|wed|thur|fri|sat|sun"
-      val wdayft = "monday|tuesday|wednesday|thursday|friday|saturday|sunday"
-      val day = "[0-3][0-9]"
-      val mth = "01|02|03|04|05|06|07|08|09|10|11|12"
-      val year = "19[7-9][0-9]|20[0-3][0-9]"
-      ""
-   }
-  }
-
-  class tokenizer(x: String)
-  {
-    val splits = " ,:.".toArray
-    x.split(splits).filter(_.nonEmpty)
-  }
-  */
 
 }
