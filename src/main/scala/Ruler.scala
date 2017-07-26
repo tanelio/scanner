@@ -58,13 +58,13 @@ package ruler {
             context watch r
             router = router.addRoutee(r)
             //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
-            println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
+            println("=> " + pattern.replaceAllLiterally("$ipv4", ipv4))
           }
       })
       println(s"${router.routees.size} rules loaded")
       def receive = {
         case x: ByteString =>
-          val str = x.utf8String
+          val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
           val dt = OLD_SYSLOG_DATE_FORMAT.parse(str).getTime // 15+1 characters for date
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
           val off = 16 + host.length + 1
@@ -89,7 +89,9 @@ package ruler {
           l.drop(off) match {
             case pat(ips) =>
               val ip = coerceToInteger(forString(ips))
+              println(s"MATCH id#$id, IP=$ips")
               attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
+            case _ =>
           }
         case Prune =>
 
