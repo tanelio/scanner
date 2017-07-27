@@ -24,20 +24,6 @@ package ruler {
   object Ruler {
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
 
-    // initialize rules from db
-    /*
-    db.run(rules.result).map(_.foreach {
-      case (id, pattern, reps, findtime, bantime, active) =>
-        if (active) {
-          println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
-          new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
-          println("=> ", pattern.replaceAllLiterally("$ipv4", ipv4))
-        }
-    })
-    */
-
-    //println(s"${Rules.size} rules loaded")
-
     val rulerref = system.actorOf(Props[ruler])
     private val ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     private val OLD_SYSLOG_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss")
@@ -65,6 +51,7 @@ package ruler {
       def receive = {
         case x: ByteString =>
           val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
+          println(s"Line = $str")
           val dt = OLD_SYSLOG_DATE_FORMAT.parse(str).getTime // 15+1 characters for date
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
           val off = 16 + host.length + 1
@@ -85,12 +72,14 @@ package ruler {
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
       def receive = {
         case Line(l, dt, host, off) =>
-          println(s"Actor id#$id received '$l'")
+//          println(s"Actor id#$id received '$l'")
           l.drop(off) match {
             case pat(ips) =>
               val ip = coerceToInteger(forString(ips))
-              println(s"MATCH id#$id, IP=$ips")
-              attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
+              println(s"MATCH id#$id, IP=$ips Line=$l")
+              val insertActions = DBIO.seq(
+                attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
+              )
             case _ =>
           }
         case Prune =>

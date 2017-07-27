@@ -20,7 +20,7 @@ package main {
 
   // Evils: Super | Genius | Resident | Casual | Happles
   class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Boolean, String, Int, Int, String)](tag, "ATTACKS") {
-    def id = column[Int]("SUP_ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
+    def id = column[Int]("ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
     def ts = column[Timestamp]("TS") // When incident occurred
     def sip = column[Int]("SIP") // SourceIP
     def ll = column[Boolean]("LL") // LinkLocal [Y|N] don't scan locals
