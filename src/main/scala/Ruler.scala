@@ -1,7 +1,6 @@
 /**
   * Created by totala on 7/9/17.
   */
-import main.main.{attacks, db, rules}
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,13 +12,12 @@ package ruler {
   import java.text.SimpleDateFormat
 
   import akka.actor.{Actor, Props, Terminated}
-  import akka.routing.Broadcast
   import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
+  import main.main._
 
   import scala.collection.mutable
   import scala.util.matching.Regex
-  import main.main._
 
   object Ruler {
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
@@ -80,6 +78,7 @@ package ruler {
               val insertActions = DBIO.seq(
                 attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
               )
+              db.run(insertActions)
             case _ =>
           }
         case Prune =>
