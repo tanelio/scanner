@@ -38,7 +38,7 @@ package ruler {
             println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
             // val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
             //   val props = Props(classOf[MyActor], arg1, arg2)
-            val r = context.actorOf(Props(classOf[rule], id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime))
+            val r = context.actorOf(Props(classOf[rule], id, regexconv(preamble), regexconv(pattern), reps, findtime, bantime))
             context watch r
             router = router.addRoutee(r)
             //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
@@ -46,6 +46,9 @@ package ruler {
           }
       })
       println(s"${router.routees.size} rules loaded")
+
+      def regexconv(x: String) : Regex = new Regex(x.replaceAllLiterally("$ipv4", ipv4))
+
       def receive = {
         case x: ByteString =>
           val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
@@ -66,7 +69,7 @@ package ruler {
     case class Line(l: String, dt: Long, host: String, off: Int)
     case class Prune()
     class rule(val id: Int, val pre: Regex, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
-      println(s"Actor id#$id started")
+      println(s"Actor id#$id started\n  pre=$pre\n  pat=$pat")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
       var preseen = 0L
       if (pre.toString.isEmpty)
@@ -75,9 +78,15 @@ package ruler {
       def receive = {
         case Line(l, dt, host, off) =>
           l.drop(off) match {
-            case pre =>
+            case pre(str) =>
+              println(s"preAmble seen: $l, str=$str")
               preseen = dt
+              val insertActions = DBIO.seq(
+                attacks += (0, new Timestamp(dt), 0, false, host, 0, 0, l)
+              )
+              db.run(insertActions)
               context.become(pattern) // PreAmble seen, switch to pattern mode
+            case _ =>
           }
       }
 
@@ -85,7 +94,7 @@ package ruler {
         case Line(l, dt, host, off) =>
 //          println(s"Actor id#$id received '$l'")
           // preamble defined, but seen more than 5 sec ago => look for more preamble
-          if (!pre.toString.isEmpty && preseen < dt - 5)
+          if (!pre.toString.isEmpty && preseen < dt - 5000)
             context.unbecome
           l.drop(off) match {
             case pat(ips) =>
