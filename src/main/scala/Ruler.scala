@@ -65,12 +65,28 @@ package ruler {
 
     case class Line(l: String, dt: Long, host: String, off: Int)
     case class Prune()
-    class rule(val id: Int, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
+    class rule(val id: Int, val pre: Regex, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
       println(s"Actor id#$id started")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
+      var preseen = 0L
+      if (pre.toString.isEmpty)
+        context.become(pattern)
+
       def receive = {
         case Line(l, dt, host, off) =>
+          l.drop(off) match {
+            case pre =>
+              preseen = dt
+              context.become(pattern) // PreAmble seen, switch to pattern mode
+          }
+      }
+
+      def pattern: Receive = {
+        case Line(l, dt, host, off) =>
 //          println(s"Actor id#$id received '$l'")
+          // preamble defined, but seen more than 5 sec ago => look for more preamble
+          if (!pre.toString.isEmpty && preseen < dt - 5)
+            context.unbecome
           l.drop(off) match {
             case pat(ips) =>
               val ip = coerceToInteger(forString(ips))
@@ -79,6 +95,8 @@ package ruler {
                 attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
               )
               db.run(insertActions)
+              if (!pre.toString.isEmpty)
+                context.unbecome  // alert occurred, look for preamble again
             case _ =>
           }
         case Prune =>
