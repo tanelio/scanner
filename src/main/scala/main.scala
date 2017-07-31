@@ -104,8 +104,9 @@ package main {
       rules += (1, "", "^sshd.*Received disconnect from $ipv4: .*\\[preauth\\]", 1, 0, 3600, true),
       // Jul 17 21:30:10 srv2v dovecot: pop3-login: Disconnected (auth failed, 1 attempts): user=<device@dr-kalai.com>, method=PLAIN, rip=158.69.103.43, lip=162.206.51.1
       rules += (2, "", "^dovecot: pop3-login: Disconnected.*rip=$ipv4, lip=", 2, 10, 3600, true),
+      // Jul 30 11:39:07 srv2v saslauthd[1771]: do_auth         : auth failure: [user=miller] [service=smtp] [realm=otala.com] [mech=pam] [reason=PAM auth error]
       // Jul 17 21:41:07 srv2v sm-mta[11778]: v6I4f33V011778: mail.actus-ilw.co.uk [92.42.121.202] (may be forged) did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA
-      rules += (3, "", "^sm-mta\\[.*\\[$ipv4\\].* did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA", 1, 0, 3600, true)
+      rules += (3, "^saslauthd.+: do_auth.+auth failure:", "^sm-mta\\[.*\\[$ipv4\\].* did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA", 1, 0, 3600, true)
     )
 
     Await.result(db.run(setup), 30 seconds)
