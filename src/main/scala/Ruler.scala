@@ -67,7 +67,8 @@ package ruler {
       println(s"Actor id#$id started\n  pre=$pre\n  pat=$pat")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
       var preseen = 0L  // ToDo: make preamble/pat work for multiple hosts
-      if (pre.toString.isEmpty)
+      val preAmble = !pre.toString.isEmpty
+      if (!preAmble)
         context.become(pattern)
 
       def receive = {
@@ -86,7 +87,7 @@ package ruler {
       def pattern: Receive = {
         case Line(l, dt, host, off) =>
           // preamble defined, but seen more than 5 sec (5000 ms) ago => look for more preamble
-          if (!pre.toString.isEmpty && preseen < dt - 5000)
+          if (preAmble && preseen < dt - 5000)
             context.unbecome
           l.drop(off) match {
             case pat(ips) =>
@@ -95,7 +96,7 @@ package ruler {
               // ToDo: implement reps & action
               db.run(DBIO.seq(
                 attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)))
-              if (!pre.toString.isEmpty)
+              if (preAmble)
                 context.unbecome  // alert occurred, look for preamble again
             case _ =>
           }
