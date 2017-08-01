@@ -49,6 +49,8 @@ package ruler {
 
       def regexconv(x: String) : Regex = new Regex(x.replaceAllLiterally("$ipv4", ipv4))
 
+      // ToDo: Scedule a Prune every 60 seconds
+
       def receive = {
         case x: ByteString =>   // Let's process as much as makes sense for all rules
           val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
@@ -58,6 +60,7 @@ package ruler {
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
           router.route(Line(str, dt, host, 16 + host.length + 1), sender())
         case Terminated(a) =>
+        // ToDo: Send Prune as broadcast once every 60 seconds
       }
     }
 
@@ -101,7 +104,7 @@ package ruler {
             case _ =>
           }
         case Prune =>
-
+          // Go through all IPs, see if findtime has been exceeded
       }
     }
   }
