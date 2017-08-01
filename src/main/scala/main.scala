@@ -80,7 +80,7 @@ package main {
   - host (or could use DNS resolver libs)
   * The programs need to exist, or otherwise this node can't be a scanner node
   * If 'which' does not exist, then progs are called w/out absolute path...
-  * ...later it might be goodto add some type of anti-trojan verification of the progs
+  * ...later it might be good to add some type of anti-trojan verification of the progs
  */
 
   object main extends App {
