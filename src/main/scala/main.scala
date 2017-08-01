@@ -28,6 +28,7 @@ package main {
     def dport = column[Int]("DPORT") // Destination Port
     def evil = column[Int]("TYPE") // Type of incident/attack, ToDo: Create Enum
     def desc = column[String]("TXT") // Syslog line of incident
+    def action = column[String]("ACTION")
     def * = (id, ts, sip, ll, dip, dport, evil, desc)
   }
 
@@ -64,6 +65,13 @@ package main {
     def * = (id, preamble, pattern, reps, findtime, bantime, active)
   }
 
+  // ToDo: implement actions & firewall chains
+  class Actions(tag: Tag) extends Table[(String, String)](tag, "ACTIONS") {
+    def id = column[String]("ID")
+    def action = column[String]("ACTION")
+    def * = (id, action)
+  }
+
   /*
  External programs:
   - nmap
@@ -91,6 +99,7 @@ package main {
     val scans = TableQuery[Scans]
     val whois = TableQuery[Whois]
     val rules = TableQuery[Rules]
+    val actions = TableQuery[Actions]
 
 //    Future.sequence(schema.create).onComplete()
     // schema.create
@@ -98,7 +107,8 @@ package main {
 
     val setup = DBIO.seq(
 
-      (attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema).create,
+      // ToDo: Deal with existing schema & tables
+      (attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema).create,
 
       // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
       rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true),

@@ -99,6 +99,7 @@ package ruler {
             case pat(ips) =>
               val ip = coerceToInteger(forString(ips))
               println(s"MATCH id#$id, IP=$ips Line=$l")
+              // ToDo: implement reps & action
               val insertActions = DBIO.seq(
                 attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
               )
