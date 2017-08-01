@@ -38,7 +38,7 @@ package ruler {
             println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
             // val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
             //   val props = Props(classOf[MyActor], arg1, arg2)
-            val r = context.actorOf(Props(classOf[rule], id, regexconv(preamble), regexconv(pattern), reps, findtime, bantime), action)
+            val r = context.actorOf(Props(classOf[rule], id, regexconv(preamble), regexconv(pattern), reps, findtime, bantime, action))
             context watch r
             router = router.addRoutee(r)
             //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
