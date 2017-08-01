@@ -1,13 +1,12 @@
 import java.net.InetSocketAddress
 
 import akka.actor.{Actor, ActorRef}
-import org.slf4j.LoggerFactory
 import akka.io.{IO, Udp}
+import org.slf4j.LoggerFactory
 
 package syslog {
 
-  import akka.actor.{Props, ReceiveTimeout}
-  import akka.util.ByteString
+  import akka.actor.Props
 
   /**
     * Created by totala on 6/27/17.
@@ -24,8 +23,8 @@ package syslog {
 
   class SyslogReceiver extends Actor {
 
-    import context.system
     import SyslogReceiver._
+    import context.system
     import ruler.Ruler._
 
     IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
