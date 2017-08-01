@@ -50,18 +50,13 @@ package ruler {
       def regexconv(x: String) : Regex = new Regex(x.replaceAllLiterally("$ipv4", ipv4))
 
       def receive = {
-        case x: ByteString =>
+        case x: ByteString =>   // Let's process as much as makes sense for all rules
           val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
           println(s"Line = $str")
           val dt = OLD_SYSLOG_DATE_FORMAT.parse(str).getTime // 15+1 characters for date
+        //          val now = System.currentTimeMillis()    // alternative: take current timestampt
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
-          val off = 16 + host.length + 1
-//          val now = System.currentTimeMillis()
-//          router.route(w, sender())
-//          routees ! Line(str, dt, host, off)
-//          router ! Line(str, dt, host, off)
-//          router ! Broadcast("test")
-          router.route(Line(str, dt, host, off), sender())
+          router.route(Line(str, dt, host, 16 + host.length + 1), sender())
         case Terminated(a) =>
       }
     }
@@ -113,6 +108,5 @@ package ruler {
       }
     }
   }
-
 
 }
