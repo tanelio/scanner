@@ -71,7 +71,7 @@ package ruler {
     class rule(val id: Int, val pre: Regex, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int) extends Actor {
       println(s"Actor id#$id started\n  pre=$pre\n  pat=$pat")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
-      var preseen = 0L
+      var preseen = 0L  // ToDo: make preamble/pat work for multiple hosts
       if (pre.toString.isEmpty)
         context.become(pattern)
 
@@ -92,8 +92,7 @@ package ruler {
 
       def pattern: Receive = {
         case Line(l, dt, host, off) =>
-//          println(s"Actor id#$id received '$l'")
-          // preamble defined, but seen more than 5 sec ago => look for more preamble
+          // preamble defined, but seen more than 5 sec (5000 ms) ago => look for more preamble
           if (!pre.toString.isEmpty && preseen < dt - 5000)
             context.unbecome
           l.drop(off) match {
