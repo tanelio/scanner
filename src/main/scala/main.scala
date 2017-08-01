@@ -88,9 +88,7 @@ package main {
 
     val logger = LoggerFactory.getLogger("main")
 
-    print("args: ")
-    args foreach print _
-    println()
+    println("args: " + args.mkString(","))
 
     val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     val sess = db.createSession()

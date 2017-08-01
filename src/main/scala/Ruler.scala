@@ -82,7 +82,7 @@ package ruler {
               println(s"preAmble seen: $l, str=$str")
               preseen = dt
               val insertActions = DBIO.seq(
-                attacks += (0, new Timestamp(dt), 0, false, host, 0, 0, l)
+                attacks += (0, new Timestamp(dt), -1, false, host, 0, 0, l)
               )
               db.run(insertActions)
               context.become(pattern) // PreAmble seen, switch to pattern mode
