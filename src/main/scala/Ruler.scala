@@ -76,10 +76,8 @@ package ruler {
             case pre(str) =>
               println(s"preAmble seen: $l, str=$str")
               preseen = dt
-              val insertActions = DBIO.seq(
-                attacks += (0, new Timestamp(dt), -1, false, host, 0, 0, l)
-              )
-              db.run(insertActions)
+              db.run(DBIO.seq(
+                attacks += (0, new Timestamp(dt), -1, false, host, 0, 0, l)))
               context.become(pattern) // PreAmble seen, switch to pattern mode
             case _ =>
           }
@@ -95,10 +93,8 @@ package ruler {
               val ip = coerceToInteger(forString(ips))
               println(s"MATCH id#$id, IP=$ips Line=$l")
               // ToDo: implement reps & action
-              val insertActions = DBIO.seq(
-                attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)
-              )
-              db.run(insertActions)
+              db.run(DBIO.seq(
+                attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)))
               if (!pre.toString.isEmpty)
                 context.unbecome  // alert occurred, look for preamble again
             case _ =>
