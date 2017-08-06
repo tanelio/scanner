@@ -104,6 +104,7 @@ package main {
     // schema.create
     //Await.result(db.run(DBIOAction.seq((attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema).create)), 30 seconds)
 
+    println(s"creating tab;es/schema")
     val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema
 
     val tables = List(attacks, scans, whois, rules, actions)
@@ -117,6 +118,7 @@ package main {
     })
     Await.result(f, Duration.Inf)
 
+    println(s"Creating initial data")
     val setup = DBIO.seq(
 
       // ToDo: Deal with existing schema & tables
