@@ -10,6 +10,7 @@ import scala.sys.process._
 package main {
 
   import ruler.Ruler
+  import slick.jdbc.meta.MTable
   import syslog.SyslogReceiver
 
   import scala.concurrent.Await
@@ -103,10 +104,33 @@ package main {
     // schema.create
     //Await.result(db.run(DBIOAction.seq((attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema).create)), 30 seconds)
 
+    val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema
+
+    /*
+    val t1 = TableQuery[Table1]
+    val t2 = TableQuery[Table2]
+    val t3 = TableQuery[Table3]
+    */
+    val tables = List(attacks, scans, whois, rules, actions)
+
+    val existing = db.run(MTable.getTables)
+    val f = existing.flatMap( v => {
+      val names = v.map(mt => mt.name.name)
+      val createIfNotExist = tables.filter( table =>
+        (!names.contains(table.baseTableRow.tableName))).map(_.schema.create)
+      db.run(DBIO.sequence(createIfNotExist))
+    })
+    Await.result(f, Duration.Inf)
+
     val setup = DBIO.seq(
 
       // ToDo: Deal with existing schema & tables
-      (attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema).create,
+      //(attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema).create,
+/*      if (!MTable.getTables.toList.exist
+        if (!MTable.getTables.toList.exists(_.name.name == MyTable.tableName)) {
+          schema.create
+        }
+*/
 
       // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
       rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true, "ssh"),
