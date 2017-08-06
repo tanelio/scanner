@@ -106,11 +106,6 @@ package main {
 
     val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema
 
-    /*
-    val t1 = TableQuery[Table1]
-    val t2 = TableQuery[Table2]
-    val t3 = TableQuery[Table3]
-    */
     val tables = List(attacks, scans, whois, rules, actions)
 
     val existing = db.run(MTable.getTables)
@@ -126,11 +121,6 @@ package main {
 
       // ToDo: Deal with existing schema & tables
       //(attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema).create,
-/*      if (!MTable.getTables.toList.exist
-        if (!MTable.getTables.toList.exists(_.name.name == MyTable.tableName)) {
-          schema.create
-        }
-*/
 
       // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
       rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true, "ssh"),
