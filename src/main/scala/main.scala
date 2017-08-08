@@ -86,6 +86,7 @@ package main {
 
   object main extends App {
     import scala.concurrent.duration._
+    import scala.concurrent.ExecutionContext.Implicits.global
 
     val logger = LoggerFactory.getLogger("main")
 
