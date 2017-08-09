@@ -21,7 +21,7 @@ package main {
 
   // Evils: Super | Genius | Resident | Casual | Happles
   class Attacks(tag: Tag) extends Table[(Int, Timestamp, Int, Boolean, String, Int, Int, String)](tag, "ATTACKS") {
-    def id = column[Int]("ID_A", O.PrimaryKey, O.AutoInc) // This is the primary key column
+    def id = column[Int]("ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
     def ts = column[Timestamp]("TS") // When incident occurred
     def sip = column[Int]("SIP") // SourceIP
     def ll = column[Boolean]("LL") // LinkLocal [Y|N] don't scan locals
@@ -51,7 +51,7 @@ package main {
   }
 
   class Rules(tag: Tag) extends Table[(Int, String, String, Int, Int, Int, Boolean, String)](tag, "RULES") {
-    def id = column[Int]("ID_R", O.PrimaryKey)
+    def id = column[Int]("ID", O.PrimaryKey)
     def preamble = column[String]("PREAMBLE")
     def pattern = column[String]("PATTERN")
     def reps = column[Int]("REPS")
@@ -121,9 +121,6 @@ package main {
 
     println(s"Creating initial data")
     val setup = DBIO.seq(
-
-      // ToDo: Deal with existing schema & tables
-      //(attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema).create,
 
       // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
       rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true, "ssh"),
