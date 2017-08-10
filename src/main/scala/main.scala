@@ -101,13 +101,8 @@ package main {
     val rules = TableQuery[Rules]
     val actions = TableQuery[Actions]
 
-//    Future.sequence(schema.create).onComplete()
-    // schema.create
-    //Await.result(db.run(DBIOAction.seq((attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema).create)), 30 seconds)
-
     println(s"creating tab;es/schema")
     val schema = attacks.schema ++ scans.schema ++ whois.schema ++ rules.schema ++ actions.schema
-
     val tables = List(attacks, scans, whois, rules, actions)
 
     val existing = db.run(MTable.getTables)
