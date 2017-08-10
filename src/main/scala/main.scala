@@ -93,14 +93,10 @@ package main {
     println("args: " + args.mkString(","))
     var Roles = Set[String]()
     args.foreach {
-      case "recv" =>
-        Roles += "recv"
-      case "fw" =>
-        Roles += "fw"
-      case "probe" =>
-        Roles += "probe"
-      case x =>
-        println(s"Unknowsn role: $x")
+      case "recv" =>      Roles += "recv"
+      case "fw" =>        Roles += "fw"
+      case "probe" =>     Roles += "probe"
+      case x =>           println(s"Unknowsn role: $x")
     }
 
     val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
