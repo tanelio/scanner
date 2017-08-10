@@ -13,6 +13,8 @@ package main {
   import slick.jdbc.meta.MTable
   import syslog.SyslogReceiver
 
+  import scala.collection.immutable.HashSet
+  import scala.collection.mutable
   import scala.concurrent.Await
 
   /**
@@ -90,12 +92,18 @@ package main {
 
     val logger = LoggerFactory.getLogger("main")
 
+    object Role extends Enumeration {
+      type Role = Value
+      val recv, fw, probe = Value
+    }
+    import Role._
+
     println("args: " + args.mkString(","))
-    var Roles = Set[String]()
+    val roles: HashSet[Role] =
     args.foreach {
-      case "recv" =>      Roles += "recv"
-      case "fw" =>        Roles += "fw"
-      case "probe" =>     Roles += "probe"
+      case "recv" =>      yield recv
+      case "fw" =>        yield fw
+      case "probe" =>     yield probe
       case x =>           println(s"Unknowsn role: $x")
     }
 
