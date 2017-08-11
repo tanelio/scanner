@@ -13,8 +13,6 @@ package main {
   import slick.jdbc.meta.MTable
   import syslog.SyslogReceiver
 
-  import scala.collection.immutable.HashSet
-  import scala.collection.mutable
   import scala.concurrent.Await
 
   /**
@@ -99,12 +97,11 @@ package main {
     import Role._
 
     println("args: " + args.mkString(","))
-    val roles: HashSet[Role] =
-    args.foreach {
-      case "recv" =>      yield recv
-      case "fw" =>        yield fw
-      case "probe" =>     yield probe
-      case x =>           println(s"Unknowsn role: $x")
+    val roles =
+      for (arg <- args) yield arg match {
+      case "recv" =>      recv
+      case "fw" =>        fw
+      case "probe" =>     probe
     }
 
     val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
