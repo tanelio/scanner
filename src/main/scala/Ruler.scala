@@ -89,10 +89,10 @@ package ruler {
               db.run(DBIO.seq(
                 attacks += (0, new Timestamp(dt), -1, false, host, 0, 0, l)))
               context.become(pattern) // PreAmble seen, switch to pattern mode
-            case Prune =>
-              prune
             case _ =>
           }
+        case Prune =>
+          prune
       }
 
       def pattern: Receive = {
