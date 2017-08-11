@@ -103,6 +103,7 @@ package main {
       case "fw" =>        fw
       case "probe" =>     probe
     }
+    // ToDo: set up cluster based on Roles
 
     val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     val sess = db.createSession()
