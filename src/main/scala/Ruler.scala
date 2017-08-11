@@ -18,6 +18,7 @@ package ruler {
 
   import scala.collection.mutable
   import scala.util.matching.Regex
+  import scala.concurrent.duration._
 
   object Ruler {
     val ipv4 = "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
@@ -46,10 +47,9 @@ package ruler {
           }
       })
       println(s"${router.routees.size} rules loaded")
+      val pruneperiodic = system.scheduler.schedule(60 seconds, 60 seconds, rulerref, Prune)
 
       def regexconv(x: String) : Regex = new Regex(x.replaceAllLiterally("$ipv4", ipv4))
-
-      // ToDo: Scedule a Prune every 60 seconds
 
       def receive = {
         case x: ByteString =>   // Let's process as much as makes sense for all rules
@@ -60,8 +60,10 @@ package ruler {
           val host = str.drop(16).takeWhile(!_.isSpaceChar)
           router.route(Line(str, dt, host, 16 + host.length + 1), sender())
         case Terminated(a) =>
-        // ToDo: Send Prune as broadcast once every 60 seconds
+        case Prune =>
+          router.route(Prune, rulerref)
       }
+      pruneperiodic.cancel()
     }
 
     case class Line(l: String, dt: Long, host: String, off: Int)
@@ -74,6 +76,10 @@ package ruler {
       if (!preAmble)
         context.become(pattern)
 
+      def prune = {
+        // Todo: Go through all IPs, see if findtime has been exceeded
+      }
+
       def receive = {
         case Line(l, dt, host, off) =>
           l.drop(off) match {
@@ -83,6 +89,8 @@ package ruler {
               db.run(DBIO.seq(
                 attacks += (0, new Timestamp(dt), -1, false, host, 0, 0, l)))
               context.become(pattern) // PreAmble seen, switch to pattern mode
+            case Prune =>
+              prune
             case _ =>
           }
       }
@@ -104,7 +112,7 @@ package ruler {
             case _ =>
           }
         case Prune =>
-          // Go through all IPs, see if findtime has been exceeded
+          prune
       }
     }
   }
