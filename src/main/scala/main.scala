@@ -133,6 +133,7 @@ package main {
     if (Await.result(db.run(rules.length.result), 10 seconds) == 0) {
       println(s"Creating initial data")
       val setup = DBIO.seq(
+        // Aug 12 12:14:26 srv5 sshd[8679]: Failed password for invalid user admin from 110.183.125.125 port 10875 ssh2
 
         // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
         rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true, "ssh"),
