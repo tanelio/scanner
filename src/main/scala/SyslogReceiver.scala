@@ -37,7 +37,7 @@ package syslog {
 
     def ready(socket: ActorRef): Receive = {
       case Udp.Received(data, remote) =>
-        logger.debug(s"SyslogReceiver/Received: $data")
+//        logger.debug(s"SyslogReceiver/Received: $data")
         rulerref ! data   // Get out of UDP receiver as quickly as possible
       case Udp.Unbind =>
         logger.info(s"SyslogReceiver/Unbind")

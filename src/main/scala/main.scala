@@ -133,7 +133,6 @@ package main {
     if (Await.result(db.run(rules.length.result), 10 seconds) == 0) {
       println(s"Creating initial data")
       val setup = DBIO.seq(
-        // Aug 12 12:14:26 srv5 sshd[8679]: Failed password for invalid user admin from 110.183.125.125 port 10875 ssh2
 
         // Jul 17 21:21:19 srv2v sshd[11066]: Received disconnect from 116.31.116.37: 11:  [preauth]
         rules += (1, "", "^sshd.+Received disconnect from $ipv4: .+\\[preauth\\]", 1, 0, 3600, true, "ssh"),
@@ -143,6 +142,9 @@ package main {
         // Jul 17 21:41:07 srv2v sm-mta[11778]: v6I4f33V011778: mail.actus-ilw.co.uk [92.42.121.202] (may be forged) did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA
         rules += (3, "^saslauthd.+do_auth.+auth failure.+\\[user=(\\w+)\\].+",
           "^sm-mta\\[.+\\[$ipv4\\].+did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA", 1, 0, 3600, true, "sasl"),
+        // Aug 12 12:14:26 srv5 sshd[8679]: Failed password for invalid user admin from 110.183.125.125 port 10875 ssh2
+        // Aug 19 15:00:30 nuc sshd[25608]: Failed password for root from 218.65.30.122 port 42322 ssh2
+        rules += (4, "", "sshd.+ Failed password .+from $ipv4 port.+", 1, 0, 3600, true, "ssh"),
 
         actions += ("ssh", "22"),
         actions += ("dovecot", "110,143"),
