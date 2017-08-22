@@ -18,11 +18,11 @@ package action {
   import scala.collection.mutable
 
   object Actions {
-    val actionmap = mutable.HashMap.empty[String, ActorRef)
+    val actionmap = mutable.HashMap.empty[String, ActorRef]
     db.run(actions.result).map(_.foreach {
       case (id, action) =>
         actionmap += (id -> system.actorOf(Props[Action], action))
-    }
+      )}
 
   }
 
