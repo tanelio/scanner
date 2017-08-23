@@ -20,14 +20,14 @@ package action {
     })
   }
 
-  case class act(ip: String)
-  case class unact(ip: String)
+  case class ban(ip: String)
+  case class unban(ip: String)
 
   class Action(val action: String) extends Actor {
     def receive = {
-      case act(ip) =>
+      case ban(ip) =>
         println(s"act = $ip")
-      case unact(ip) =>
+      case unban(ip) =>
         println(s"unact = $ip")
     }
   }
