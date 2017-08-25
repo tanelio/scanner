@@ -11,6 +11,7 @@ package ruler {
   import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
+  import action.Actions
   import akka.actor.{Actor, Props, Terminated}
   import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
@@ -29,6 +30,8 @@ package ruler {
 
     class ruler extends Actor {
       import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, Router}
+      import action.Actions._
+      Actions.init
       var router = {
         val routees = Vector.empty[ActorRefRoutee]
         Router(BroadcastRoutingLogic(), routees)
