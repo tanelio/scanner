@@ -15,7 +15,7 @@ package action {
   import akka.actor.{Actor, Props}
 
   object Actions {
-    val actionref = system.actorOf(Props(classOf[Action], act))
+    //val actionref = system.actorOf(Props[Action], action)
     val actionmap = mutable.HashMap.empty[String, ActorRef]
     db.run(actions.result).map(_.foreach {
       case (id, action) =>
