@@ -12,8 +12,10 @@ package action {
 
   import scala.collection.mutable
   import scala.sys.process._
+  import akka.actor.{Actor, Props}
 
   object Actions {
+    val actionref = system.actorOf(Props(classOf[Action], act))
     val actionmap = mutable.HashMap.empty[String, ActorRef]
     db.run(actions.result).map(_.foreach {
       case (id, action) =>
@@ -22,7 +24,7 @@ package action {
     val chain = "BLOCKED"
     def quoted(x: String) = "\"" + x + "\""
 
-    Seq(iptablesprog, "-N", chain).!
+    Seq(iptablesprog, "-N", chain).!!
     Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", quoted("BLOCKED: ")).!!  // --log-level 4
     Seq(iptablesprog, "-A", chain, "-j", "DROP").!!
   }

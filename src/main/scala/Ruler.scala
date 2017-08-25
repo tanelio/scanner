@@ -106,6 +106,7 @@ package ruler {
               val ip = coerceToInteger(forString(ips))
               println(s"MATCH id#$id, IP=$ips Line=$l")
               // ToDo: implement reps & action
+              actionref ! Ban(ips)
               db.run(DBIO.seq(
                 attacks += (0, new Timestamp(dt), ip, getByName(ips).isSiteLocalAddress, host, 0, 0, l)))
               if (preAmble)
