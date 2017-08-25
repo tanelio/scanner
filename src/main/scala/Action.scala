@@ -11,6 +11,7 @@ package action {
   import main.main._
 
   import scala.collection.mutable
+  import scala.sys.process._
 
   object Actions {
     val actionmap = mutable.HashMap.empty[String, ActorRef]
@@ -18,6 +19,13 @@ package action {
       case (id, action) =>
         actionmap += (id -> system.actorOf(Props[Action], action))
     })
+    val iptablesprog = "iptables"
+    val chain = "BLOCKED"
+    def quoted(x: String) = "\"" + x + "\""
+
+    Seq(iptablesprog, "-N", chain).!
+    Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", quoted("BLOCKED: ")).!!  // --log-level 4
+    Seq(iptablesprog, "-A", chain, "-j", "DROP").!!
   }
 
   case class ban(ip: String)
