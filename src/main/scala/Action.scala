@@ -19,7 +19,6 @@ package action {
       case (id, action) =>
         actionmap += (id -> system.actorOf(Props[Action], action))
     })
-    val iptablesprog = "iptables"
     val chain = "BLOCKED"
     def quoted(x: String) = "\"" + x + "\""
 
@@ -32,11 +31,14 @@ package action {
   case class unban(ip: String)
 
   class Action(val action: String) extends Actor {
+    import Actions._
     def receive = {
       case ban(ip) =>
         println(s"act = $ip")
+        Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
       case unban(ip) =>
         println(s"unact = $ip")
+        Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
     }
   }
 
