@@ -23,11 +23,10 @@ package action {
       })
     }
     val chain = "BLOCKED"
-    def quoted(x: String) = "\"" + x + "\""
-//    def ban(id: String, ip :String) = actionmap(id) ! Ban(ip)
+    def Quote(x: String) = "\"" + x + "\""
 
     Seq(iptablesprog, "-N", chain).!!
-    Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", quoted("BLOCKED: ")).!!  // --log-level 4
+    Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
     Seq(iptablesprog, "-A", chain, "-j", "DROP").!!
   }
 
