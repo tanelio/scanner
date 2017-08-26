@@ -45,13 +45,13 @@ package action {
           println(s"already banned $ip")
         else {
           banned += ip
-          println(s"act = $ip")
-          case Unban(ip) =>
+          println(s"ban = $ip")
           Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
         }
-    if (banned.contains(ip)) {
+      case Unban(ip) =>
+        if (banned.contains(ip)) {
           banned -= ip
-          println(s"unact = $ip")
+          println(s"unban = $ip")
           Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
         } else
           println(s"already unbanned $ip")
