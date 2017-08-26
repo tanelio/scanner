@@ -24,10 +24,13 @@ package action {
     }
     val chain = "BLOCKED"
     def Quote(x: String) = "\"" + x + "\""
+    var banned = mutable.HashSet.empty[String]
 
+    // todo: handle already established chain
     Seq(iptablesprog, "-N", chain).!!
     Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
     Seq(iptablesprog, "-A", chain, "-j", "DROP").!!
+    // todo: pre-load banned with already banned IPs from iptables
   }
 
   case class Ban(ip: String)
@@ -35,13 +38,23 @@ package action {
 
   class Action(val action: String) extends Actor {
     import Actions._
+
     def receive = {
       case Ban(ip) =>
-        println(s"act = $ip")
-        Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
+        if (banned.contains(ip))
+          println(s"already banned $ip")
+        else {
+          banned += ip
+          println(s"act = $ip")
+          Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
+        }
       case Unban(ip) =>
-        println(s"unact = $ip")
-        Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
+        if (banned.contains(ip)) {
+          banned -= ip
+          println(s"unact = $ip")
+          Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
+        } else
+          println(s"already unbanned $ip")
     }
   }
 
