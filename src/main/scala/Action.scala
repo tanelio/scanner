@@ -16,7 +16,6 @@ package action {
   object Actions {
     val actionmap = mutable.HashMap.empty[String, ActorRef]
     def init = {
-      //val actionref = system.actorOf(Props[Action], action)
       db.run(actions.result).map(_.foreach {
         case (id, action) =>
           actionmap += (id -> system.actorOf(Props[Action], action))
@@ -57,5 +56,4 @@ package action {
           println(s"already unbanned $ip")
     }
   }
-
 }
