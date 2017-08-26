@@ -19,8 +19,6 @@ package syslog {
     val syslogreceiverref = system.actorOf(Props[SyslogReceiver])
   }
 
-//        IO(Udp) ! Udp.Bind(self, inetSockAddress, List(new ReuseAddress())) // ToDo
-
   class SyslogReceiver extends Actor {
 
     import SyslogReceiver._
