@@ -97,6 +97,7 @@ package ruler {
           }
         case Prune =>
           prune
+          // todo: implement unban?
       }
 
       def pattern: Receive = {
