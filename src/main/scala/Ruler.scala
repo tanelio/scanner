@@ -11,8 +11,8 @@ package ruler {
   import java.sql.Timestamp
   import java.text.SimpleDateFormat
 
-  import action.Actions
-  import akka.actor.{Actor, Props, Terminated}
+  import action.{Actions, Ban}
+  import akka.actor.{Actor, ActorRef, Props, Terminated}
   import akka.util.ByteString
   import com.google.common.net.InetAddresses.{coerceToInteger, forString}
   import main.main._
@@ -42,7 +42,7 @@ package ruler {
             println(s"id#$id '$pattern' reps=$reps, findtime=$findtime")
             // val r = context.actorOf(Props(new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)))
             //   val props = Props(classOf[MyActor], arg1, arg2)
-            val r = context.actorOf(Props(classOf[rule], id, regexconv(preamble), regexconv(pattern), reps, findtime, bantime, action))
+            val r = context.actorOf(Props(classOf[rule], id, regexconv(preamble), regexconv(pattern), reps, findtime, bantime, actionmap(action)))
             context watch r
             router = router.addRoutee(r)
             //new rule(id, new Regex(pattern.replaceAllLiterally("$ipv4", ipv4)), reps, findtime, bantime)
@@ -72,7 +72,7 @@ package ruler {
 
     case class Line(l: String, dt: Long, host: String, off: Int)
     case class Prune()
-    class rule(val id: Int, val pre: Regex, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int, val action: String) extends Actor {
+    class rule(val id: Int, val pre: Regex, val pat: Regex, val reps: Int, val findtime: Int, val bantime: Int, val actionref: ActorRef) extends Actor {
       println(s"Actor id#$id started\n  pre=$pre\n  pat=$pat")
       val instances = mutable.HashMap.empty[Int, Int]   // IP, repetitions
       var preseen = 0L  // ToDo: make preamble/pat work for multiple hosts
