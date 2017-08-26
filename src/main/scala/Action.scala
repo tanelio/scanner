@@ -46,10 +46,10 @@ package action {
         else {
           banned += ip
           println(s"act = $ip")
+          case Unban(ip) =>
           Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
         }
-      case Unban(ip) =>
-        if (banned.contains(ip)) {
+    if (banned.contains(ip)) {
           banned -= ip
           println(s"unact = $ip")
           Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
