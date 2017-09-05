@@ -9,20 +9,11 @@
       <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/config/1.2.1/config-1.2.1.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/reactivestreams/reactive-streams/1.0.0/reactive-streams-1.0.0.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/2.5.1/HikariCP-2.5.1.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick-hikaricp_2.11/3.2.0/slick-hikaricp_2.11-3.2.0.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.11.8/scala-library-2.11.8.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick_2.11/3.2.0/slick_2.11-3.2.0.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.18/slf4j-api-1.7.18.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/config/1.2.1/config-1.2.1.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/reactivestreams/reactive-streams/1.0.0/reactive-streams-1.0.0.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/2.5.1/HikariCP-2.5.1.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick-hikaricp_2.11/3.2.0/slick-hikaricp_2.11-3.2.0-javadoc.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick-hikaricp_2.11/3.2.0/slick-hikaricp_2.11-3.2.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick-hikaricp_2.11/3.2.0/slick-hikaricp_2.11-3.2.0-sources.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/com/typesafe/slick/slick-hikaricp_2.11/3.2.0/slick-hikaricp_2.11-3.2.0-sources.jar!/" />
     </SOURCES>
   </library>

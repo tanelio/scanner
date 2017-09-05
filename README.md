@@ -10,3 +10,11 @@ Cluster the attackers based on similarities (networks, OS types, open ports (nma
 as a potential new attack vector.
 
 Periodically clean (de-cluster) attackers by comparing nmap fingerprint (cleaned / re-installed machines).
+
+Technologies:
+- program: Scala, FP
+- clustering/distribution: Akka
+- database: H2 (possibly changing portions to Cassandra later)
+- utilities (dependencies): nmap, iptables, sudo, jwhois, which
+- OS: Linux
+- Platform: JVM 1.8, Scala 2.12
