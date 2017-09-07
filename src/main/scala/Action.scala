@@ -26,10 +26,10 @@ package action {
     var banned = mutable.HashSet.empty[String]
 
     // todo: handle already established chain
-    Seq(iptablesprog, "-N", chain).!!
+    Seq(sudo, iptablesprog, "-N", chain).!!
     // todo: should logging be limited to 1/sec to avoid DoS?
-    Seq(iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
-    Seq(iptablesprog, "-A", chain, "-j", "DROP").!!
+    Seq(sudo, iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
+    Seq(sudo, iptablesprog, "-A", chain, "-j", "DROP").!!
     // todo: pre-load banned with already banned IPs from iptables
   }
 
