@@ -128,7 +128,7 @@ package main {
         (!names.contains(table.baseTableRow.tableName))).map(_.schema.create)
       db.run(DBIO.sequence(createIfNotExist))
     })
-    Await.result(f, Duration.Inf)
+    Await.result(f, 30 seconds)
 
     if (Await.result(db.run(rules.length.result), 10 seconds) == 0) {
       println(s"Creating initial data")
