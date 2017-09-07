@@ -155,7 +155,7 @@ package main {
 
     val system = ActorSystem("scanner")
 
-    val sudo = "sudo"
+    val sudo = "/usr/bin/sudo"
     val nmapprog = findprog("nmap")
     val tracerouteprog = findprog("traceroute")
     val whoisprog = findprog("whois")
