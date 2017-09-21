@@ -31,6 +31,7 @@ package action {
     Seq(sudo, iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
     Seq(sudo, iptablesprog, "-A", chain, "-j", "DROP").!!
     // todo: pre-load banned with already banned IPs from iptables
+    Seq(sudo, iptablesprog, "-vnL").!!
   }
 
   case class Ban(ip: String)
@@ -46,13 +47,13 @@ package action {
         else {
           banned += ip
           println(s"ban = $ip")
-          Seq(iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
+          Seq(sudo, iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
         }
       case Unban(ip) =>
         if (banned.contains(ip)) {
           banned -= ip
           println(s"unban = $ip")
-          Seq(iptablesprog, "-D", "INPUT", "-s", ip).!!
+          Seq(sudo, iptablesprog, "-D", "INPUT", "-s", ip).!!
         } else
           println(s"already unbanned $ip")
     }

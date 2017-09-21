@@ -156,10 +156,10 @@ package main {
     val system = ActorSystem("scanner")
 
     val sudo = "/usr/bin/sudo"
-    val nmapprog = findprog("nmap")
-    val tracerouteprog = findprog("traceroute")
-    val whoisprog = findprog("whois")
-    val iptablesprog = findprog("iptables")
+    val nmapprog = findprog("/usr/bin/nmap")
+    val tracerouteprog = findprog("/usr/sbin/traceroute")
+    val whoisprog = findprog("/usr/bin/whois")
+    val iptablesprog = findprog("/sbin/iptables")
 
     println(nmapprog, tracerouteprog, whoisprog, iptablesprog)
 
