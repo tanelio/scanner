@@ -156,6 +156,7 @@ package main {
     val system = ActorSystem("scanner")
 
     val sudo = "/usr/bin/sudo"
+    val whichprog = "/usr/bin/which"
     val nmapprog = findprog("/usr/bin/nmap")
     val tracerouteprog = findprog("/usr/sbin/traceroute")
     val whoisprog = findprog("/usr/bin/whois")
@@ -175,7 +176,12 @@ package main {
     println(InetAddress.getByName("10.0.0.0").isSiteLocalAddress)
     */
 
-    def findprog(prog: String): String = Seq("which", prog).!!.trim
+    def findprog(prog: String): String = {
+      if (File(prog).exist)
+        prog
+      else
+        Seq("which", prog.split("/").last).!!.trim
+    }
 
     val running = true
     while (running)
