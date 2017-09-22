@@ -178,8 +178,7 @@ package main {
 
     import java.io.File
     def findprog(prog: String): String = {
-      val f = new File(prog)
-      if (f.exists)
+      if (new File(prog).exists)
         prog
       else
         Seq("which", prog.split("/").last).!!.trim
