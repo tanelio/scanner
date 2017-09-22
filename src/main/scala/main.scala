@@ -176,8 +176,10 @@ package main {
     println(InetAddress.getByName("10.0.0.0").isSiteLocalAddress)
     */
 
+    import java.io.File
     def findprog(prog: String): String = {
-      if (File(prog).exist)
+      val f = new File(prog)
+      if (f.exists)
         prog
       else
         Seq("which", prog.split("/").last).!!.trim
