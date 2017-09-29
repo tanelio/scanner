@@ -30,7 +30,6 @@ package action {
     // todo: should logging be limited to 1/sec to avoid DoS?
     Seq(sudoprog, iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
     Seq(sudoprog, iptablesprog, "-A", chain, "-j", "DROP").!!
-    // todo: pre-load banned with already banned IPs from iptables
     val blocks = Seq(sudoprog, iptablesprog, "-vnL", chain).!!
     //   748 45088 DROP       all  --  *      *       5.230.4.124          0.0.0.0/0
     val pattern = """\d+\s+\d+\s+\w+\s+.+(\d+\.\d+\.\d+\.\d+)\s+.+""".r
