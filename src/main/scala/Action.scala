@@ -38,7 +38,7 @@ package action {
       l.trim match {
         case pattern(ip) =>
           banned += ip
-        // todo: default case missing
+        case _ =>
       }
   }
 

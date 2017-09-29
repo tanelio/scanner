@@ -105,7 +105,7 @@ package main {
           case "recv" =>      recv
           case "fw" =>        fw
           case "probe" =>     probe
-          // todo: default case missing
+          case _ =>
         }
     // ToDo: set up cluster based on Roles
 
