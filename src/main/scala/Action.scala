@@ -26,12 +26,19 @@ package action {
     var banned = mutable.HashSet.empty[String]
 
     // todo: handle already established chain
-    Seq(sudo, iptablesprog, "-N", chain).!!
+    Seq(sudoprog, iptablesprog, "-N", chain).!!
     // todo: should logging be limited to 1/sec to avoid DoS?
-    Seq(sudo, iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
-    Seq(sudo, iptablesprog, "-A", chain, "-j", "DROP").!!
+    Seq(sudoprog, iptablesprog, "-A", chain, "-j", "LOG", "--log-prefix", Quote("BLOCKED: ")).!!  // --log-level 4
+    Seq(sudoprog, iptablesprog, "-A", chain, "-j", "DROP").!!
     // todo: pre-load banned with already banned IPs from iptables
-    Seq(sudo, iptablesprog, "-vnL").!!
+    val blocks = Seq(sudoprog, iptablesprog, "-vnL", chain).!!
+    //   748 45088 DROP       all  --  *      *       5.230.4.124          0.0.0.0/0
+    val pattern = """\d+\s+\d+\s+\w+\s+.+(\d+\.\d+\.\d+\.\d+)\s+.+""".r
+    for (l <- blocks.split("\n"))
+      l.trim match {
+        case pattern(ip) =>
+          banned += ip
+      }
   }
 
   case class Ban(ip: String)
@@ -47,13 +54,13 @@ package action {
         else {
           banned += ip
           println(s"ban = $ip")
-          Seq(sudo, iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
+          Seq(sudoprog, iptablesprog, "-A", "INPUT", "-s", ip, "-j", chain).!!
         }
       case Unban(ip) =>
         if (banned.contains(ip)) {
           banned -= ip
           println(s"unban = $ip")
-          Seq(sudo, iptablesprog, "-D", "INPUT", "-s", ip).!!
+          Seq(sudoprog, iptablesprog, "-D", "INPUT", "-s", ip).!!
         } else
           println(s"already unbanned $ip")
     }

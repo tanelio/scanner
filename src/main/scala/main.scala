@@ -102,10 +102,10 @@ package main {
         Role.values
     else
         for (arg <- args) yield arg match {
-        case "recv" =>      recv
-        case "fw" =>        fw
-        case "probe" =>     probe
-      }
+          case "recv" =>      recv
+          case "fw" =>        fw
+          case "probe" =>     probe
+        }
     // ToDo: set up cluster based on Roles
 
     val db = Database.forURL("jdbc:h2:~/scanner.h2;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
@@ -155,7 +155,7 @@ package main {
 
     val system = ActorSystem("scanner")
 
-    val sudo = "/usr/bin/sudo"
+    val sudoprog = "/usr/bin/sudo"
     val whichprog = "/usr/bin/which"
     val nmapprog = findprog("/usr/bin/nmap")
     val tracerouteprog = findprog("/usr/sbin/traceroute")
@@ -181,7 +181,7 @@ package main {
       if (new File(prog).exists)
         prog
       else
-        Seq("which", prog.split("/").last).!!.trim
+        Seq(whichprog, prog.split("/").last).!!.trim
     }
 
     val running = true
