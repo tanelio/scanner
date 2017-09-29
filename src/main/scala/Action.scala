@@ -34,6 +34,7 @@ package action {
     val blocks = Seq(sudoprog, iptablesprog, "-vnL", chain).!!
     //   748 45088 DROP       all  --  *      *       5.230.4.124          0.0.0.0/0
     val pattern = """\d+\s+\d+\s+\w+\s+.+(\d+\.\d+\.\d+\.\d+)\s+.+""".r
+    // todo: convert into a stream? unlikely that string length can be a problem
     for (l <- blocks.split("\n"))
       l.trim match {
         case pattern(ip) =>
