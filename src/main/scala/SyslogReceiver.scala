@@ -26,6 +26,7 @@ package syslog {
     import ruler.Ruler._
 
     IO(Udp) ! Udp.Bind(self, new InetSocketAddress("0.0.0.0", 1514))
+    // Note: using port 1514 (above 1024) instead of original 514 which would require root privileges
 
     def receive = {
       case Udp.Bound(local) =>
@@ -36,7 +37,7 @@ package syslog {
     def ready(socket: ActorRef): Receive = {
       case Udp.Received(data, remote) =>
 //        logger.debug(s"SyslogReceiver/Received: $data")
-        rulerref ! data   // Get out of UDP receiver as quickly as possible
+        rulerref ! data   // Get out of UDP receiver Actor as quickly as possible
       case Udp.Unbind =>
         logger.info(s"SyslogReceiver/Unbind")
         socket ! Udp.Unbind
