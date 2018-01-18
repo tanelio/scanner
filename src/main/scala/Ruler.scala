@@ -100,7 +100,7 @@ package ruler {
           // todo: implement unban?
       }
 
-      def pattern: Receive = {
+x      def pattern: Receive = {
         case Line(l, dt, host, off) =>
           // preamble defined, but seen more than 5 sec (5000 ms) ago => look for more preamble
           if (preAmble && preseen < dt - 5000)
