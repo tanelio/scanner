@@ -55,6 +55,9 @@ package ruler {
       def regexconv(x: String) : Regex = new Regex(x.replaceAllLiterally("$ipv4", ipv4))
 
       def receive = {
+        // Syslog format: https://en.wikipedia.org/wiki/Syslog
+        // Syslog RFC: https://tools.ietf.org/html/rfc5424
+        // SDF: https://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
         case x: ByteString =>   // Let's process as much as makes sense for all rules
           val str = x.utf8String.dropWhile(_ != '>').drop(1) // Take out PRI <xxx>
           println(s"Line = $str")

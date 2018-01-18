@@ -48,6 +48,3 @@ package syslog {
   }
 }
 
-// Syslog format: https://en.wikipedia.org/wiki/Syslog
-// Syslog RFC: https://tools.ietf.org/html/rfc5424
-// SDF: https://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
